@@ -1,3 +1,5 @@
+import re
+
 from django.template.defaultfilters import slugify
 
 from utils import CanadianPerson as Person
@@ -10,13 +12,15 @@ CONTACT_PAGE = "https://ville.saguenay.ca/la-ville-et-vie-democratique/cabinet"
 
 class SaguenayPersonScraper(CanadianScraper):
     def scrape(self):
-        mayor_page = self.lxmlize(MAYOR_PAGE)
         contact_page = self.lxmlize(CONTACT_PAGE)
-        name = mayor_page.xpath('//a[contains(., "maire")]/span/text()')[0]
+        name_paragraph = contact_page.xpath(
+            '//h2[contains(., "Coordonn")]/following-sibling::p[contains(., "maire")][1]'
+        )[0].text_content()
+        name = re.search(r"maire\s+([\wÀ-ž]+\s+[\wÀ-ž]+)", name_paragraph).group(1)
         p = Person(primary_org="legislature", name=name, district="Saguenay", role="Maire")
         p.add_source(MAYOR_PAGE)
         p.add_source(CONTACT_PAGE)
-        node = contact_page.xpath('//h2[contains(., "Coordonnées du cabinet")]/following-sibling::p')[1]
+        node = contact_page.xpath('//h2[contains(., "Coordonn")]/following-sibling::p')[1]
         p.add_contact("voice", self.get_phone(node, area_codes=[418]), "legislature")
         yield p
 

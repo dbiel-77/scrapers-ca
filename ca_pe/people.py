@@ -35,7 +35,11 @@ class PrinceEdwardIslandPersonScraper(CanadianScraper):
             p.add_source(url)
 
             details = self.lxmlize(url)
-            p.image = details.xpath('//div[contains(@class, "member-portrait")]//img')[0].get("src")
+            portrait = details.xpath('//div[contains(@class, "member-portrait")]//img')
+            if not portrait:
+                portrait = details.xpath('//img[contains(@src, "/files/") and not(contains(@src, "logo"))]')
+            if portrait:
+                p.image = portrait[0].get("src")
             info = details.xpath('//div[contains(@class, "member-contact-info")]')[0]
 
             phone = re.search(r"(?:Telephone|Tel|Phone):\s*(.+?)\n", info.text_content())

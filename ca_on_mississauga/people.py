@@ -44,7 +44,7 @@ class MississaugaPersonScraper(CanadianScraper):
 
         name = page.xpath('//*[@id="com-main"]/div/div/div/h1/text()')[0]
         name = name.replace("Mayor – ", "")
-        photo = page.xpath('//*[@id="65a01af8598b7"]/p[1]/img/@src')[0]
+        photo = page.xpath('//*[@id="65a01af8598b7"]//img/@src')[0]
 
         p = Person(primary_org="legislature", name=name, district="Mississauga", role="Mayor")
         p.add_source(url)

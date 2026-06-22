@@ -67,7 +67,8 @@ class CanadaPersonScraper(CanadianScraper):
             url_results = row.xpath('.//a[@class="ce-mip-mp-tile-link"]/@href')
             if not url_results:
                 continue
-            url = "https://www.ourcommons.ca" + url_results[0]
+            href = url_results[0]
+        url = href if href.startswith("http") else "https://www.ourcommons.ca" + href
 
             if province == "Québec":
                 url = url.replace("/en/", "/fr/")

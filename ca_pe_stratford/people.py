@@ -11,7 +11,7 @@ class StratfordPersonScraper(CanadianScraper):
     def scrape(self):
         seat_numbers = defaultdict(int)
 
-        page = self.lxmlize(COUNCIL_PAGE, user_agent="Mozilla/5.0")
+        page = self.cloudscrape(COUNCIL_PAGE)
 
         councillors = page.xpath("//tr")
         assert len(councillors), "No councillors found"

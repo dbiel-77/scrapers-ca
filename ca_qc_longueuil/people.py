@@ -18,7 +18,8 @@ class LongueuilPersonScraper(CanadianScraper):
             if tr.xpath('./td[1]//strong[contains(., "ARRONDISSEMENT")]'):
                 continue
 
-            district = tr.xpath('.//p[contains(./strong, "District")]/a/text()')[0]
+            district_parts = tr.xpath('.//p[strong[contains(., "District")]]/text()')
+            district = "".join(district_parts).strip()
             if "Greenfield Park" in district:
                 district = f"Greenfield Park (siège {seat_number})"
                 seat_number += 1

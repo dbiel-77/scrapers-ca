@@ -26,7 +26,7 @@ class QuebecPersonScraper(CanadianScraper):
                     district = "Québec"
                     role = "Maire"
                 else:
-                    district = councillor.xpath('./p[@itemprop="jobTitle"]/a/text()')[0]
+                    district = councillor.xpath('.//a[contains(@href, "carte-district")]/text()')[0]
                     district = (
                         re.search(r"\ADistrict (?:de(?: la)?|du|des) ([\w —–-]+)", district, flags=re.UNICODE)
                         .group(1)

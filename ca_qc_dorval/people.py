@@ -8,7 +8,9 @@ class DorvalPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
 
-        councillors = page.xpath('//div[@class="c-rubric-card || js-accordion"]')[:-3]
+        councillors = page.xpath(
+            '//div[@class="c-rubric-card || js-accordion"][starts-with(@id, "accordion-mayor") or starts-with(@id, "accordion-district-")]'
+        )
         assert len(councillors), "No councillors found"
         for councillor in councillors:
             name = councillor.xpath('.//h2[@class="c-rubric-card__title"]')[0].text_content()

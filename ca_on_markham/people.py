@@ -94,7 +94,7 @@ class MarkhamPersonScraper(CanadianScraper):
         phone = self.get_phone(contact_node)
 
         p = Person(primary_org="legislature", name=name, district="Markham", role="Mayor")
-        p.image = page.xpath('.//div[@class="align-right media--image"]/div/img/@src')[0]
+        p.image = page.xpath('.//div[contains(@class, "media--image")]//img/@src')[0]
         p.add_contact("email", email)
         p.add_contact("voice", phone, "legislature")
         p.add_source(url)

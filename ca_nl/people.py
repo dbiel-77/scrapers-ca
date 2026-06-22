@@ -38,6 +38,7 @@ class NewfoundlandAndLabradorPersonScraper(CanadianScraper):
             if member["name"] in ("Vacant", "<em>Vacant</em>"):
                 continue
             name = " ".join(reversed(member["name"].split(","))).strip()
+            name = name.replace('"', "'")  # fix apostrophes corrupted by JS single-to-double quote substitution
             district = (
                 member["district"]
                 .replace("&apos;", "'")
