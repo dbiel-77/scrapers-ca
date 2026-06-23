@@ -13,7 +13,9 @@ class BlainvillePersonScraper(CanadianScraper):
     def scrape(self):
         response = self.get(COUNCIL_PAGE)
         page = lxml.html.fromstring(response.content.decode("utf-8"))
-        members = page.xpath('//ul[contains(concat(" ", normalize-space(@class), " "), " drawers ")]//li[.//h4 and .//h5]')
+        members = page.xpath(
+            '//ul[contains(concat(" ", normalize-space(@class), " "), " drawers ")]//li[.//h4 and .//h5]'
+        )
         assert len(members) == 13, "Expected 13 council members"
 
         for member in members:

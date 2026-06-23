@@ -10,7 +10,9 @@ COUNCIL_PAGE = "https://www.st-hyacinthe.ca/ville/vie-democratique/conseil-munic
 class SaintHyacinthePersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
-        members = page.xpath('//div[contains(@class, "wow") and contains(@class, "fadeInUp")][.//a[contains(@href, "mailto:")]]')
+        members = page.xpath(
+            '//div[contains(@class, "wow") and contains(@class, "fadeInUp")][.//a[contains(@href, "mailto:")]]'
+        )
         assert len(members) == 11, "Expected 11 council members"
 
         for member in members:
