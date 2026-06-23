@@ -26,7 +26,7 @@ class RepentignyPersonScraper(CanadianScraper):
                 district = detail_page.xpath(
                     'normalize-space(//*[contains(text(), "District ") and contains(text(), " - ")][1])'
                 )
-                district = re.sub(r"\s+", " ", district)
+                district = re.sub(r"\s+", " ", district).replace("\u2019", "'")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

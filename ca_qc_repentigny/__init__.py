@@ -16,7 +16,7 @@ class Repentigny(CanadianJurisdiction):
         organization.add_post(role="Maire", label=self.division_name, division_id=self.division_id)
         districts = [
             "District 1 - Repentigny-les-Bains",
-            "District 2 - L’Hôtel-de-Ville",
+            "District 2 - L'Hôtel-de-Ville",
             "District 3 - Centre-ville",
             "District 4 - Du Fleuve",
             "District 5 - Des Moulins",
