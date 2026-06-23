@@ -14,10 +14,24 @@ class Repentigny(CanadianJurisdiction):
         organization = Organization(self.name, classification=self.classification)
 
         organization.add_post(role="Maire", label=self.division_name, division_id=self.division_id)
-        for district_number in range(1, 13):
+        districts = [
+            "District 1 - Repentigny-les-Bains",
+            "District 2 - L’Hôtel-de-Ville",
+            "District 3 - Centre-ville",
+            "District 4 - Du Fleuve",
+            "District 5 - Des Moulins",
+            "District 6 - Félix-Leclerc",
+            "District 7 - Valmont-sur-Parc",
+            "District 8 - Jean-Baptiste-Meilleur",
+            "District 9 - Du Boisé",
+            "District 10 - Le Gardeur",
+            "District 11 - Le Bourg-Neuf",
+            "District 12 - Vieux-St-Paul",
+        ]
+        for district_number, district in enumerate(districts, start=1):
             organization.add_post(
                 role="Conseiller",
-                label=f"District {district_number}",
+                label=district,
                 division_id=f"{self.division_id}/district:{district_number}",
             )
 
