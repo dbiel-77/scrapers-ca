@@ -4,9 +4,7 @@ from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 BASE_URL = "https://www.reddeer.ca"
-COUNCIL_PAGE = (
-    f"{BASE_URL}/city-government/mayor-and-city-councillors/city-council/city-council-profiles/"
-)
+COUNCIL_PAGE = f"{BASE_URL}/city-government/mayor-and-city-councillors/city-council/city-council-profiles/"
 
 
 class RedDeerPersonScraper(CanadianScraper):
