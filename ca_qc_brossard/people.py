@@ -9,16 +9,18 @@ COUNCIL_PAGE = "https://www.brossard.ca/elus-municipaux"
 class BrossardPersonScraper(CanadianScraper):
     def scrape(self):
         secteurs_to_districts = {
-            "secteurs c-e-b": "District 1",
-            "secteur b": "District 2",
-            "secteur a": "District 3",
-            "secteurs p-v": "District 4",
-            "secteurs t-s-p": "District 5",
-            "secteur s": "District 6",
-            "secteur r": "District 7",
-            "secteurs o-n-i": "District 8",
-            "secteurs l-n-j-x-y": "District 9",
-            "secteurs l-m-n": "District 1",
+            "c, e, l": "District 1",
+            "c, b": "District 2",
+            "b": "District 3",
+            "a": "District 4",
+            "p, v": "District 5",
+            "t, p": "District 6",
+            "r, s": "District 7",
+            "r": "District 8",
+            "o, n, i": "District 9",
+            "l, j, x, y": "District 10",
+            "m, n": "District 11",
+            "secteur saint-laurent": "District 12",
         }
         page = self.lxmlize(COUNCIL_PAGE)
 

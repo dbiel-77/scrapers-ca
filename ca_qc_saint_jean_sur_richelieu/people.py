@@ -49,21 +49,20 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
                 name_nodes = node.xpath("//h1")
                 name = name_nodes[0].text_content().strip() if name_nodes else ""
 
-            # For councillors, district is in h2[@class="entry-title"]
-            # e.g. "Conseillère municipale du district 1"
+            # For councillors, district is in h2 (e.g. "Conseillère municipale du district 1")
             if role == "Conseiller":
-                entry_title_nodes = node.xpath('//h2[@class="entry-title"]')
-                if entry_title_nodes:
-                    district_text = entry_title_nodes[0].text_content().strip()
-                    m = re.search(r"district\s+(\d+)", district_text, re.IGNORECASE)
-                    district = f"District {m.group(1)}" if m else district_text
+                h2_nodes = node.xpath("//h2")
+                district_text = h2_nodes[0].text_content().strip() if h2_nodes else ""
+                m = re.search(r"district\s+(\d+)", district_text, re.IGNORECASE)
+                district = f"District {m.group(1)}" if m else district_text
                 if not district:
                     district = "Saint-Jean-sur-Richelieu"
 
-            # Photo: try Beaver Builder class first, then any WordPress upload img
-            photo_nodes = node.xpath('//div[@class="fl-photo-content fl-photo-img-jpg"]//img/@src')
-            if not photo_nodes:
-                photo_nodes = node.xpath('//img[contains(@src, "wp-content/uploads")]/@src')
+            # Photo: WordPress upload img excluding site logos (logo.jpg, logo_blanc*)
+            photo_nodes = node.xpath(
+                '//img[contains(@src, "wp-content/uploads")'
+                ' and not(contains(@src, "logo"))]/@src'
+            )
             photo_url = urljoin(url, photo_nodes[0]) if photo_nodes else None
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)

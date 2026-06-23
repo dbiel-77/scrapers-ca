@@ -7,7 +7,7 @@ MAYOR_PAGE = "https://www.hamilton.ca/city-council/council-committee/city-counci
 
 class HamiltonPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_PAGE)
+        page = self.cloudscrape(COUNCIL_PAGE)
 
         yield self.mayor_data(MAYOR_PAGE)
 
@@ -17,7 +17,7 @@ class HamiltonPersonScraper(CanadianScraper):
             yield self.councillor_data(url)
 
     def councillor_data(self, url):
-        page = self.lxmlize(url)
+        page = self.cloudscrape(url)
 
         district = page.xpath("//h1/text()")[0]
         name = page.xpath('//h2[@class="title"]/text()')[0].split("(")[0].strip()
@@ -41,7 +41,7 @@ class HamiltonPersonScraper(CanadianScraper):
         return p
 
     def mayor_data(self, url):
-        page = self.lxmlize(url)
+        page = self.cloudscrape(url)
         name = page.xpath('//h2[@class="title"]/text()')[0]
 
         info_node = page.xpath(

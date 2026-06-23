@@ -14,7 +14,7 @@ class SaultSteMariePersonScraper(CanadianScraper):
         seat_numbers = defaultdict(int)
 
         # Councillors are listed inline as h3 elements: "Ward X - Councillor Name"
-        councillor_headings = page.xpath('//h3[contains(text(), "Councillor")]')
+        councillor_headings = page.xpath('//h3[contains(., "Councillor")]')
         assert len(councillor_headings), "No councillors found"
 
         # Scrape mayor from dedicated page

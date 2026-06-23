@@ -33,14 +33,14 @@ class BellevillePersonScraper(CanadianScraper):
         for ward in wards:
             ward_name = ward.text.strip()
             accordions = ward.xpath(
-                './following-sibling::div[contains(@class, "accordion")][1]//p[@class="tab"]/a[@class="nav-link nav-button-link collapsed"]'
+                './following-sibling::div[contains(@class, "accordion")][1]//a[starts-with(@href, "#collapse_")]'
             )
             for anchor in accordions:
                 self.seat_numbers[ward_name] += 1
                 district = f"{ward_name} (seat {self.seat_numbers[ward_name]})"
                 councillor_name = anchor.text_content().strip()
                 collapse_id = anchor.get("href").lstrip("#")
-                content = page.xpath(f'//div[@id="{collapse_id}"]//div[@class="text"]')
+                content = page.xpath(f'//div[@id="{collapse_id}"]')
                 if not content:
                     continue
                 content = content[0]

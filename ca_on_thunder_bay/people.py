@@ -11,11 +11,13 @@ class ThunderBayPersonScraper(CanadianScraper):
         # SSLError(SSLError(1, '[SSL: DH_KEY_TOO_SMALL] dh key too small (_ssl.c:1133)'))
         page = self.lxmlize(COUNCIL_PAGE, verify=False)
 
-        # All councillor photos are in the Mayor-and-Council images folder.
-        # Structure varies by councillor:
-        #   Linked:     <a href="..."><img src="..."><h6>Ward Name</h6></a><h6>Name</h6>
-        #   Unlinked:   <img src="...">At Large text<h6>Name</h6>
-        #   (ward/role label may be h6 inside <a> or plain text sibling of img)
+        # Current structure: <img src="/en/city-hall/resources/Images/Mayor-and-Council/...">
+        # followed by ward-label text (as anchor tail or div), then <h6>Name</h6>
+        # Some cards are wrapped in <a href="...">; others are bare.
+        # Pattern per card (linked):
+        #   <a href="..."><img ...>Ward Label text</a><h6>Name</h6>
+        # Pattern per card (unlinked):
+        #   <img ...><div>Ward Label</div><h6>Name</h6>
         councillor_imgs = page.xpath('//img[contains(@src, "/Mayor-and-Council/")]')
         assert len(councillor_imgs), "No councillors found"
 
@@ -26,21 +28,19 @@ class ThunderBayPersonScraper(CanadianScraper):
             parent = img.getparent()
 
             if parent.tag == "a":
-                # Linked councillor: ward/role h6 is inside the <a>, name h6 is after the <a>
-                ward_h6 = parent.xpath("./h6")
-                ward_label = ward_h6[0].text_content().strip() if ward_h6 else ""
+                # Linked: ward label is the tail text of the img inside the anchor
+                ward_label = (img.tail or "").strip()
+                if not ward_label:
+                    # fallback: full text of anchor minus img alt text
+                    ward_label = parent.text_content().strip()
+                # Name h6 is a following sibling of the anchor
                 name_h6 = parent.xpath("following-sibling::h6")
                 name = name_h6[0].text_content().strip() if name_h6 else ""
                 search_node = parent.getparent()
             else:
-                # Unlinked councillor: ward label is a text node sibling, name is in next h6
-                # Get the text immediately following the img (tail text or next sibling text)
-                ward_label = (img.tail or "").strip()
-                if not ward_label:
-                    # Try next sibling text nodes
-                    next_sib = img.getnext()
-                    if next_sib is not None and next_sib.tag not in ("h6", "h5", "h4"):
-                        ward_label = next_sib.text_content().strip()
+                # Unlinked: ward label is in a following sibling div or text node
+                ward_div = img.xpath("following-sibling::div")
+                ward_label = ward_div[0].text_content().strip() if ward_div else (img.tail or "").strip()
                 name_h6 = img.xpath("following-sibling::h6")
                 name = name_h6[0].text_content().strip() if name_h6 else ""
                 search_node = parent
@@ -48,12 +48,9 @@ class ThunderBayPersonScraper(CanadianScraper):
             if not name:
                 continue
 
-            # Default ward_label from h6 if still empty (some pages may use h6 for all)
-            if not ward_label:
-                h6_before_name = img.xpath("following-sibling::h6")
-                if len(h6_before_name) >= 2:
-                    ward_label = h6_before_name[0].text_content().strip()
-                    name = h6_before_name[1].text_content().strip()
+            # Strip leading "Mayor " from name if present in h6 (e.g. "Mayor Ken Boshcoff")
+            if name.startswith("Mayor "):
+                name = name[len("Mayor "):]
 
             if ward_label == "Mayor":
                 role = "Mayor"

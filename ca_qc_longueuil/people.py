@@ -18,8 +18,12 @@ class LongueuilPersonScraper(CanadianScraper):
             if tr.xpath('./td[1]//strong[contains(., "ARRONDISSEMENT")]'):
                 continue
 
+            detail_url = tr.xpath(".//@href")[0] if tr.xpath(".//@href") else None
+            if not detail_url:
+                continue
+
             district_parts = tr.xpath('.//p[strong[contains(., "District")]]/text()')
-            district = "".join(district_parts).strip()
+            district = "".join(district_parts).strip().replace("\xa0", "")
             if "Greenfield Park" in district:
                 district = f"Greenfield Park (siège {seat_number})"
                 seat_number += 1
@@ -30,7 +34,6 @@ class LongueuilPersonScraper(CanadianScraper):
                 "Vieux-Saint-Hubert-de la Savane": "Vieux-Saint-Hubert-la Savane",
             }.get(district, district)
 
-            detail_url = tr.xpath(".//@href")[0]
             detail_page = self.lxmlize(detail_url, "utf-8")
 
             name = detail_page.xpath("//h1/text()")[0]

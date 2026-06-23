@@ -87,14 +87,25 @@ class MarkhamPersonScraper(CanadianScraper):
     def scrape_mayor(self, url):
         page = self.lxmlize(url)
         name = page.xpath(
-            './/div[@class="formatted-text field-content field-content--label--body field-content--entity-type--block-content field-content--name--body"]/h2/text()'
-        )[0]
-        contact_node = page.xpath('.//div[@class="dept-contact-info--block"]')[0]
+            './/div[contains(@class, "field-content--name--body")]/h2/text()'
+        )
+        if not name:
+            name = page.xpath('.//h1/text()|.//h2[not(contains(@class, "field-label"))]/text()')
+        name = [n.strip() for n in name if n.strip() and "Office" not in n and "Request" not in n and "Contact" not in n and "News" not in n and "Meeting" not in n and "Connect" not in n][0]
+
+        contact_node = page.xpath('.//div[contains(@class, "dept-contact-info--block")]')
+        if contact_node:
+            contact_node = contact_node[0]
+        else:
+            contact_node = page
+
         email = self.get_email(contact_node)
         phone = self.get_phone(contact_node)
 
         p = Person(primary_org="legislature", name=name, district="Markham", role="Mayor")
-        p.image = page.xpath('.//div[contains(@class, "media--image")]//img/@src')[0]
+        images = page.xpath('.//div[contains(@class, "media--image")]//img/@src|.//img[contains(@src, "/files/")]/@src')
+        if images:
+            p.image = images[0]
         p.add_contact("email", email)
         p.add_contact("voice", phone, "legislature")
         p.add_source(url)

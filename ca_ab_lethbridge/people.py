@@ -9,8 +9,12 @@ class LethbridgePersonScraper(CanadianScraper):
     def scrape_mayor(self):
         page = self.lxmlize(MAYOR_PAGE)
 
-        paragraph = page.xpath("//h4[contains(., 'Mayor')]/following-sibling::p")[0].text_content().split()
-        name = " ".join([paragraph[0], paragraph[1]])
+        # Use the first p following the biography h4 (e.g. "Mayor Hyggen"), which starts "FirstName LastName was..."
+        bio_paragraphs = page.xpath("//h4[contains(., 'Mayor') and not(contains(., 'Watch'))]/following-sibling::p")
+        bio_text = bio_paragraphs[0].text_content().strip()
+        # Extract "FirstName LastName" from "FirstName LastName was ..." or fallback to first two words
+        name_match = bio_text.split(" was ")[0].strip() if " was " in bio_text else " ".join(bio_text.split()[:2])
+        name = name_match
 
         p = Person(primary_org="legislature", name=name, district="Lethbridge", role="Mayor")
         p.image = page.xpath("//img/@src")[0]

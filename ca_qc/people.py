@@ -189,7 +189,7 @@ SOCIAL_MEDIA_DATA = {
 
 class QuebecPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_PAGE)
+        page = self.lxmlize(COUNCIL_PAGE, verify=False)
         members = page.xpath('//*[@id="ListeDeputes"]/tbody/tr')
         headings = {
             "Circonscription": "constituency",

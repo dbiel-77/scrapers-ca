@@ -14,7 +14,7 @@ class TroisRivieresPersonScraper(CanadianScraper):
         page = self.lxmlize(COUNCIL_PAGE)
 
         # Each councillor has a "Voir la fiche" link to their profile page
-        profile_links = page.xpath('//a[normalize-space(text())="Voir la fiche"]/@href')
+        profile_links = page.xpath('//a[contains(normalize-space(.), "Voir la fiche")]/@href')
         assert len(profile_links), "No councillors found"
 
         for href in profile_links:

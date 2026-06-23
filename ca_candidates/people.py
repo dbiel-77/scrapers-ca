@@ -259,7 +259,7 @@ class CanadaCandidatesPersonScraper(CanadianScraper):
                                     self.warning(f"{key}: expected {prop} to be {scraped}, not {entered}")
                     yield p
 
-            except IndexError:
+            except (IndexError, scrapelib.HTTPError):
                 logger.exception("")
 
     def scrape_ndp(self):

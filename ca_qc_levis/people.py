@@ -9,8 +9,8 @@ ARRONDISSEMENTS_PAGE = "https://www.ville.levis.qc.ca/la-ville/arrondissements/c
 
 class LevisPersonScraper(CanadianScraper):
     def scrape(self):
-        council_page = self.lxmlize(COUNCIL_PAGE)
-        arrondissements_page = self.lxmlize(ARRONDISSEMENTS_PAGE)
+        council_page = self.cloudscrape(COUNCIL_PAGE)
+        arrondissements_page = self.cloudscrape(ARRONDISSEMENTS_PAGE)
 
         presidents = {}
         for president in arrondissements_page.xpath('//p[contains(./b, "Président")]'):
