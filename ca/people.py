@@ -68,7 +68,7 @@ class CanadaPersonScraper(CanadianScraper):
             if not url_results:
                 continue
             href = url_results[0]
-        url = href if href.startswith("http") else "https://www.ourcommons.ca" + href
+            url = href if href.startswith("http") else "https://www.ourcommons.ca" + href
 
             if province == "Québec":
                 url = url.replace("/en/", "/fr/")
