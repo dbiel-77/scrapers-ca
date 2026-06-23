@@ -5,9 +5,8 @@ from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 COUNCIL_PAGE = "https://www.dnv.org/government-administration/mayor-and-councillors"
-API_PAGE = (
-    "https://simplicity-api.dnv.org/public/webpage/path/"
-    + quote("/government-administration/mayor-and-councillors", safe="")
+API_PAGE = "https://simplicity-api.dnv.org/public/webpage/path/" + quote(
+    "/government-administration/mayor-and-councillors", safe=""
 )
 
 
