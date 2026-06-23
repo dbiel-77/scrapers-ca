@@ -63,7 +63,9 @@ class PrinceEdwardIslandPersonScraper(CanadianScraper):
                     info.text_content(),
                 )  # Richmond Street is the legislature
                 if address:
-                    address = address.group(1) + " " + address.group(2) + " " + address.group(3) + " " + address.group(4)
+                    address = (
+                        address.group(1) + " " + address.group(2) + " " + address.group(3) + " " + address.group(4)
+                    )
                     p.add_contact("address", address, "legislature")
 
                 email = self.get_email(info, error=False)

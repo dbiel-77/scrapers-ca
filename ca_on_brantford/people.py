@@ -15,16 +15,16 @@ class BrantfordPersonScraper(CanadianScraper):
 
         # Mayor is listed separately
         mayor_page = self.lxmlize(MAYOR_PAGE)
-        mayor_name_nodes = mayor_page.xpath('//h1//text()')
+        mayor_name_nodes = mayor_page.xpath("//h1//text()")
         if mayor_name_nodes:
             mayor_name = " ".join(mayor_name_nodes).strip()
             # Strip "About " prefix if present (e.g. "About Mayor Kevin Davis")
             for prefix in ("About Mayor ", "About "):
                 if mayor_name.startswith(prefix):
-                    mayor_name = mayor_name[len(prefix):]
+                    mayor_name = mayor_name[len(prefix) :]
                     break
         else:
-            mayor_name = mayor_page.xpath('//h2//text()')[0].strip()
+            mayor_name = mayor_page.xpath("//h2//text()")[0].strip()
 
         p = Person(primary_org="legislature", name=mayor_name, district="Brantford", role="Mayor")
         p.add_source(COUNCIL_PAGE)

@@ -13,9 +13,7 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
         page = self.lxmlize(COUNCIL_PAGE, encoding="utf-8")
 
         # Councillor links appear twice each (image + name), so deduplicate
-        all_links = page.xpath(
-            '//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire/")]/@href'
-        )
+        all_links = page.xpath('//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire/")]/@href')
         seen = set()
         councillors = []
         for link in all_links:
@@ -60,8 +58,7 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
 
             # Photo: WordPress upload img excluding site logos (logo.jpg, logo_blanc*)
             photo_nodes = node.xpath(
-                '//img[contains(@src, "wp-content/uploads")'
-                ' and not(contains(@src, "logo"))]/@src'
+                '//img[contains(@src, "wp-content/uploads") and not(contains(@src, "logo"))]/@src'
             )
             photo_url = urljoin(url, photo_nodes[0]) if photo_nodes else None
 

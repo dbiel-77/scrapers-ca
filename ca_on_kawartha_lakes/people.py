@@ -12,7 +12,9 @@ class KawarthaLakesPersonScraper(CanadianScraper):
 
         # h2 headings: "Ward 1 Councillor Emmett Yeo", "Ward 8 Deputy Mayor Tracy Richardson"
         # Mayor section uses a different heading
-        councillors = page.xpath('//h2[contains(., "Councillor") or contains(., "Deputy Mayor") or contains(., "Mayor")]')
+        councillors = page.xpath(
+            '//h2[contains(., "Councillor") or contains(., "Deputy Mayor") or contains(., "Mayor")]'
+        )
         assert len(councillors), "No councillors found"
         for councillor in councillors:
             heading = councillor.text_content().strip()
@@ -39,7 +41,7 @@ class KawarthaLakesPersonScraper(CanadianScraper):
             section = councillor.xpath("./following-sibling::*")
             email = self.get_email(councillor.getparent())
             phone = self.get_phone(councillor.getparent())
-            image = councillor.getparent().xpath('.//img/@src')
+            image = councillor.getparent().xpath(".//img/@src")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

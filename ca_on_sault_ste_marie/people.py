@@ -58,7 +58,7 @@ class SaultSteMariePersonScraper(CanadianScraper):
             parent = heading.getparent()
             phone = self.get_phone(parent, error=False)
             email = self.get_email(parent, error=False)
-            image_nodes = parent.xpath('.//img/@src')
+            image_nodes = parent.xpath(".//img/@src")
             image = image_nodes[0] if image_nodes else None
 
             p = Person(primary_org="legislature", name=name, district=district, role="Councillor")

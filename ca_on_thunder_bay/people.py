@@ -50,7 +50,7 @@ class ThunderBayPersonScraper(CanadianScraper):
 
             # Strip leading "Mayor " from name if present in h6 (e.g. "Mayor Ken Boshcoff")
             if name.startswith("Mayor "):
-                name = name[len("Mayor "):]
+                name = name[len("Mayor ") :]
 
             if ward_label == "Mayor":
                 role = "Mayor"

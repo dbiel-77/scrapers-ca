@@ -28,7 +28,7 @@ class StCatharinesPersonScraper(CanadianScraper):
 
         # Name: try h1 first, then look for "Mayor [Name]" in any heading or strong
         name = None
-        for el in page.xpath('//h1 | //h2 | //h3 | //strong'):
+        for el in page.xpath("//h1 | //h2 | //h3 | //strong"):
             text = el.text_content().strip()
             m = re.match(r"Mayor\s+(.+)", text)
             if m and len(m.group(1).split()) >= 1:
@@ -36,7 +36,7 @@ class StCatharinesPersonScraper(CanadianScraper):
                 break
         if not name:
             # Fallback: extract from img alt "A headshot of Mayor First Last ..."
-            for alt in page.xpath('//img/@alt'):
+            for alt in page.xpath("//img/@alt"):
                 m = re.search(r"Mayor\s+([\w][\w\s]+?)(?:\s+with|\s+in|\Z)", alt)
                 if m:
                     name = m.group(1).strip()
@@ -69,8 +69,8 @@ class StCatharinesPersonScraper(CanadianScraper):
         seat_numbers = defaultdict(int)
 
         for card in cards:
-            name = card.xpath('.//h3/text()')[0].strip().replace("Coun. ", "")
-            ward_text = card.xpath('.//p[1]/text()')[0].strip()
+            name = card.xpath(".//h3/text()")[0].strip().replace("Coun. ", "")
+            ward_text = card.xpath(".//p[1]/text()")[0].strip()
             ward_key = ward_text.split(",")[0].strip()
             ward_name = WARD_NAMES.get(ward_key, ward_key)
 
@@ -80,7 +80,7 @@ class StCatharinesPersonScraper(CanadianScraper):
             p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
             p.add_source(COUNCIL_PAGE)
 
-            img = card.xpath('.//img/@src')
+            img = card.xpath(".//img/@src")
             if img:
                 src = img[0].split("?")[0]
                 p.image = src if src.startswith("http") else BASE_URL + src

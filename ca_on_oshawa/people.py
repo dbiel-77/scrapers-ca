@@ -31,11 +31,11 @@ class OshawaPersonScraper(CanadianScraper):
                 role_desc = ward_match.group(2)
                 role = "Regional Councillor" if "Regional" in role_desc else "Councillor"
 
-            photo_url = councillor.xpath('.//img/@src')
+            photo_url = councillor.xpath(".//img/@src")
             photo_url = photo_url[0] if photo_url else None
             phone = self.get_phone(councillor)
             email = self.get_email(councillor)
-            links = councillor.xpath('.//a/@href')
+            links = councillor.xpath(".//a/@href")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role, image=photo_url)
             p.add_source(COUNCIL_PAGE)

@@ -13,18 +13,19 @@ class MonctonPersonScraper(CanadianScraper):
 
         listing = self.lxmlize(MEMBERS_URL)
         cards = [
-            c for c in listing.xpath(
+            c
+            for c in listing.xpath(
                 '//div[contains(@class,"d-flex") and contains(@class,"position-relative") and .//h3]'
                 '[.//a[contains(@href,"/members/")]]'
             )
-            if len(c.xpath('.//h3//span/text()')) == 1
+            if len(c.xpath(".//h3//span/text()")) == 1
         ]
         assert len(cards), "No councillor cards found"
 
         for card in cards:
-            name = card.xpath('.//h3//span/text()')[0].strip()
+            name = card.xpath(".//h3//span/text()")[0].strip()
             link = card.xpath('.//a[contains(@href,"/members/")]/@href')[0]
-            img = card.xpath('.//img/@src')
+            img = card.xpath(".//img/@src")
 
             profile = self.lxmlize(BASE_URL + link)
 

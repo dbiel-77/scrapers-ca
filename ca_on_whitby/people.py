@@ -26,7 +26,7 @@ class WhitbyPersonScraper(CanadianScraper):
 
             if label.startswith("Mayor "):
                 role = "Mayor"
-                name = label[len("Mayor "):]
+                name = label[len("Mayor ") :]
                 district = "Whitby"
             elif ", Regional Councillor" in label:
                 name = label.split(", Regional Councillor")[0]

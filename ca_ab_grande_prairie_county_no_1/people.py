@@ -24,8 +24,8 @@ class GrandePrairieCountyNo1PersonScraper(CanadianScraper):
                 continue
             link_text = email_link[0].text_content().strip()
             # Strip role prefix: "Email Reeve ", "Email Deputy Reeve ", "Email Councillor "
-            name = re.sub(r'^Email\s+(Deputy Reeve|Reeve|Councillor)\s+', '', link_text).strip()
-            email = email_link[0].get('href', '').replace('mailto:', '')
+            name = re.sub(r"^Email\s+(Deputy Reeve|Reeve|Councillor)\s+", "", link_text).strip()
+            email = email_link[0].get("href", "").replace("mailto:", "")
 
             p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
             p.add_source(COUNCIL_PAGE)
@@ -33,7 +33,7 @@ class GrandePrairieCountyNo1PersonScraper(CanadianScraper):
             if email:
                 p.add_contact("email", email)
 
-            img = councillor.xpath('.//img/@src')
+            img = councillor.xpath(".//img/@src")
             if img:
                 src = img[0]
                 p.image = src if src.startswith("http") else BASE_URL + src

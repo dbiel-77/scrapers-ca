@@ -15,7 +15,7 @@ class WoodBuffaloPersonScraper(CanadianScraper):
         bio = page.xpath('//h2[contains(text(),"Biography")]/following-sibling::p[normalize-space()][1]')
         name = " ".join(bio[0].text_content().strip().split()[:2])
 
-        image = page.xpath('//main//img/@src')
+        image = page.xpath("//main//img/@src")
 
         p = Person(primary_org="legislature", name=name, district="Wood Buffalo", role="Mayor")
         p.add_source(MAYOR_PAGE)
@@ -55,7 +55,7 @@ class WoodBuffaloPersonScraper(CanadianScraper):
                 p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
                 p.add_source(COUNCILLORS_PAGE)
 
-                img = content.xpath('.//img/@src')
+                img = content.xpath(".//img/@src")
                 if img:
                     src = img[0]
                     p.image = src if src.startswith("http") else BASE_URL + src

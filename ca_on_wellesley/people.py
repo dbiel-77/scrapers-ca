@@ -17,7 +17,9 @@ class WellesleyPersonScraper(CanadianScraper):
         # Each member's info is in a paragraph with text like:
         # "Mayor Joe Nowak is serving his third term as Mayor for the Township of Wellesley."
         # "Councillor Shelley Wagner is serving her fifth term as Councillor for Ward One."
-        members = page.xpath('//div[contains(@id, "collapse_")]//p[contains(., " is ") and (contains(., "Mayor") or contains(., "Councillor"))]')
+        members = page.xpath(
+            '//div[contains(@id, "collapse_")]//p[contains(., " is ") and (contains(., "Mayor") or contains(., "Councillor"))]'
+        )
         assert members, "No councillors found"
 
         for member in members:

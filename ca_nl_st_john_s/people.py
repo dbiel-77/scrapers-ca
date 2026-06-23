@@ -19,13 +19,13 @@ class StJohnsPersonScraper(CanadianScraper):
             # h1 is "Mayor Name", "Deputy Mayor Name", or "Councillor Name"
             if h1_text.startswith("Deputy Mayor "):
                 role = "Deputy Mayor"
-                name = h1_text[len("Deputy Mayor "):]
+                name = h1_text[len("Deputy Mayor ") :]
             elif h1_text.startswith("Mayor "):
                 role = "Mayor"
-                name = h1_text[len("Mayor "):]
+                name = h1_text[len("Mayor ") :]
             else:
                 role = "Councillor"
-                name = h1_text[len("Councillor "):]
+                name = h1_text[len("Councillor ") :]
 
             # Find district from first paragraph text
             paragraphs = profile_page.xpath("//main//p")

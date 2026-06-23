@@ -28,7 +28,7 @@ class MississaugaPersonScraper(CanadianScraper):
     def councillor_data(self, url):
         page = self.lxmlize(url)
 
-        name_district = page.xpath('//h1/text()')[0]
+        name_district = page.xpath("//h1/text()")[0]
         district, name = re.split(r" [–-] (?:Councillor (?:and Deputy Mayor )?)?", name_district)  # n-dash or hyphen
         email = self.get_email(page, error=False)
         photos = page.xpath('//img[contains(@src, "wp-content")]/@src')
@@ -47,7 +47,7 @@ class MississaugaPersonScraper(CanadianScraper):
     def mayor_data(self, url):
         page = self.lxmlize(url)
 
-        name = page.xpath('//h1/text()')[0]
+        name = page.xpath("//h1/text()")[0]
         name = re.sub(r"^Mayor\s*[–-]\s*", "", name)
         photos = page.xpath('//img[contains(@src, "wp-content")]/@src')
         photo = photos[0] if photos else None

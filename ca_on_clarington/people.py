@@ -44,7 +44,16 @@ class ClaringtonPersonScraper(CanadianScraper):
         # The mayor's name appears as the first word(s) in the first bio paragraph
         bio = mayor_page.xpath('//h1[contains(., "Mayor")]/following-sibling::p[1]/text()')
         name_match = re.match(r"(\w+ \w+) is serving", bio[0].strip()) if bio else None
-        name = name_match.group(1) if name_match else mayor_page.xpath('//h2[contains(., "Mayor")]')[0].text_content().split("Mayor")[1].strip().split("'")[0].strip()
+        name = (
+            name_match.group(1)
+            if name_match
+            else mayor_page.xpath('//h2[contains(., "Mayor")]')[0]
+            .text_content()
+            .split("Mayor")[1]
+            .strip()
+            .split("'")[0]
+            .strip()
+        )
         email = self.get_email(mayor_page)
         photo = mayor_page.xpath('//img[contains(@src, "/media/")]/@src')
         photo_url = photo[0] if photo else None
