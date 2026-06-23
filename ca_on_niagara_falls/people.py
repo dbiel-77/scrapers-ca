@@ -30,7 +30,7 @@ class NiagaraFallsPersonScraper(CanadianScraper):
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)
 
-            image = member.xpath('ancestor::*[.//img][1]//img/@src')
+            image = member.xpath("ancestor::*[.//img][1]//img/@src")
             if image:
                 p.image = urljoin(COUNCIL_PAGE, image[0])
 
