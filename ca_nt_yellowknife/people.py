@@ -9,7 +9,7 @@ COUNCIL_PAGE = "https://www.yellowknife.ca/city-council-and-mayor"
 
 class YellowknifePersonScraper(CanadianScraper):
     def decode_email(self, node):
-        encoded = node.xpath('.//a[@data-mail-to]/@data-mail-to')
+        encoded = node.xpath(".//a[@data-mail-to]/@data-mail-to")
         if not encoded:
             return None
         return codecs.decode(encoded[0], "rot_13").replace("/at/", "@").replace("/dot/", ".")
