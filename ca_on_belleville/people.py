@@ -11,13 +11,19 @@ MAYOR_PAGE = "https://www.belleville.ca/en/city-hall/mayors-office.aspx"
 class BellevillePersonScraper(CanadianScraper):
     seat_numbers = defaultdict(int)
 
+    def get_belleville_phone(self, node):
+        phone = self.get_phone(node)
+        if phone.startswith("//"):
+            phone = phone.lstrip("/")
+        return phone.replace(",", " x")
+
     def scrape(self):
         page = self.lxmlize(MAYOR_PAGE)
 
         name = page.xpath('//div[contains(@class, "text base-text")]/p[contains(text(), " is the ")]/text()')[0].split(
             " is the "
         )[0]
-        phone = self.get_phone(page)
+        phone = self.get_belleville_phone(page)
         email = self.get_email(page)
         image = page.xpath('//img[contains(@src, "/media/") and not(contains(@src, "logo"))]/@src')[0]
 
@@ -48,7 +54,7 @@ class BellevillePersonScraper(CanadianScraper):
                 content = content[0]
                 image_nodes = content.xpath(".//img/@src")
                 image = image_nodes[0] if image_nodes else None
-                phone = self.get_phone(content)
+                phone = self.get_belleville_phone(content)
                 email = self.get_email(content, error=False)
 
                 p = Person(primary_org="legislature", name=councillor_name, district=district, role="Councillor")
