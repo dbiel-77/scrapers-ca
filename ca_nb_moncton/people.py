@@ -27,7 +27,7 @@ class MonctonPersonScraper(CanadianScraper):
             link = card.xpath('.//a[contains(@href,"/members/")]/@href')[0]
             img = card.xpath(".//img/@src")
 
-            profile = self.lxmlize(BASE_URL + link)
+            profile = self.lxmlize(link if link.startswith("http") else BASE_URL + link)
 
             role_el = profile.xpath('//h2[@class="h5 text-black-50 mb-0 me-3"]')
             role_raw = role_el[0].text_content().strip() if role_el else "Councillor"
