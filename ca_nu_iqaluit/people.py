@@ -11,7 +11,7 @@ class IqaluitPersonScraper(CanadianScraper):
         page = self.lxmlize(COUNCIL_PAGE)
         field_item = page.xpath('//div[contains(@class,"field-item")]')
         assert field_item, "field-item div not found"
-        member_ps = field_item[0].xpath('.//p[./strong[normalize-space()]]')
+        member_ps = field_item[0].xpath(".//p[./strong[normalize-space()]]")
         assert member_ps, "No member paragraphs found"
 
         seat = 0
@@ -26,7 +26,7 @@ class IqaluitPersonScraper(CanadianScraper):
 
             if strong_text.startswith("Mayor "):
                 role = "Mayor"
-                name = strong_text[len("Mayor "):]
+                name = strong_text[len("Mayor ") :]
                 district = "Iqaluit"
             else:
                 seat += 1
@@ -34,7 +34,7 @@ class IqaluitPersonScraper(CanadianScraper):
                 district = f"Iqaluit (seat {seat})"
                 for prefix in ("Deputy Mayor ", "Alternate Deputy Mayor ", "Councillor "):
                     if strong_text.startswith(prefix):
-                        name = strong_text[len(prefix):]
+                        name = strong_text[len(prefix) :]
                         break
                 else:
                     name = strong_text
