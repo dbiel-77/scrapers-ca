@@ -25,9 +25,7 @@ class ShawiniganPersonScraper(CanadianScraper):
 
         listing = self.lxmlize(LISTING_URL)
         district_urls = list(
-            dict.fromkeys(
-                listing.xpath("//a[contains(@href, '/conseillers-municipaux/district')]/@href")
-            )
+            dict.fromkeys(listing.xpath("//a[contains(@href, '/conseillers-municipaux/district')]/@href"))
         )
         assert district_urls, "No district URLs found"
 
