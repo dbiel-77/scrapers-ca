@@ -7,7 +7,7 @@ COUNCIL_URL = "https://www.campbellriver.ca/government/city-council"
 class CampbellRiverPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_URL)
-        items = page.xpath('//div[contains(@class,"field--name-body")]//div[@class="field__item"][.//h3]')
+        items = page.xpath('//div[contains(@class,"field--name-field-row-content")]//div[@class="field__item"][.//h3]')
         assert items, "No council member items found"
         seat = 0
         for item in items:

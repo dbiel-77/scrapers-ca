@@ -8,13 +8,11 @@ BASE = "https://ville.vaudreuil-dorion.qc.ca"
 class VaudreuilDorionPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(LISTING_URL)
-        cards = page.xpath('//a[.//h3 and .//p and starts-with(@href, "/fr/")]')
+        # Cards have h3 for name but no <p> children; href pattern under /fr/la-ville/mairie/
+        cards = page.xpath('//a[.//h3 and starts-with(@href, "/fr/la-ville/mairie/conseil-municipal/")]')
         assert cards, "No member cards found"
         for card in cards:
-            num_div = card.xpath('.//div[translate(normalize-space(.), "0123456789", "") = ""]')
-            num = int(num_div[0].text_content().strip()) if num_div else None
-            district_p = card.xpath(".//p")
-            district_text = district_p[0].text_content().strip() if district_p else ""
+            is_mayor = "c-team_mayor" in (card.get("class") or "")
             href = card.get("href")
             profile_url = BASE + href if not href.startswith("http") else href
             ppage = self.lxmlize(profile_url)
@@ -22,13 +20,22 @@ class VaudreuilDorionPersonScraper(CanadianScraper):
             name = name_h[0].text_content().strip() if name_h else ""
             if not name:
                 continue
-            if num is None or "aire" in district_text.lower():
+            # District number: parse from card's number div or councillor link class
+            if is_mayor or "c-team_mayor" in (card.get("class") or ""):
                 role, district = "Mayor", "Vaudreuil-Dorion"
             else:
+                num_div = card.xpath(
+                    './/div[translate(normalize-space(.), "0123456789", "") = ""]'
+                )
+                num = int(num_div[0].text_content().strip()) if num_div else None
+                if num is None:
+                    continue
                 role, district = "Councillor", f"District {num}"
             email_el = ppage.xpath('.//a[starts-with(@href,"mailto:")]')
             email = email_el[0].get("href").replace("mailto:", "") if email_el else None
-            image = ppage.xpath('//img[contains(@src,"/sites/default/") or contains(@src,"/media/")]/@src')
+            image = ppage.xpath(
+                '//img[contains(@src,"/sites/default/") or contains(@src,"/media/")]/@src'
+            )
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(LISTING_URL)
             p.add_source(profile_url)

@@ -6,7 +6,8 @@ COUNCIL_URL = "https://www.mission.ca/council-government/mayor-council"
 
 class MissionPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_URL)
+        _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        page = self.lxmlize(COUNCIL_URL, user_agent=_UA)
         rows = page.xpath('//div[contains(@class,"view-id-mayor_council")]//div[@class="views-row"]')
         assert rows, "No council member rows found"
         seat = 0

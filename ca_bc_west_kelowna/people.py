@@ -28,9 +28,21 @@ class WestKelownaPersonScraper(CanadianScraper):
             if not email_a and container.getparent() is not None:
                 email_a = container.getparent().xpath('.//a[starts-with(@href,"mailto:")]')
             email = email_a[0].get("href").replace("mailto:", "") if email_a else None
-            if name_el:
+            # Full name from first bio paragraph: "Gord Milsom was elected..." → "Gord Milsom"
+            bio_texts = []
+            for search_el in [container, container.getparent()]:
+                if search_el is None:
+                    continue
+                bio_texts = search_el.xpath(".//p//text()")
+                if bio_texts:
+                    break
+            first_sent = " ".join(t.strip() for t in bio_texts if t.strip()).split(".")[0]
+            bio_m = re.match(r"^(.+?)\s+(?:was|has|is|served)\b", first_sent)
+            if bio_m:
+                name = bio_m.group(1).strip()
+            elif name_el:
                 name = name_el[0].text_content().strip()
-            elif email:
+            elif email and "mayorandcouncil" not in email:
                 local = email.split("@")[0]
                 name = " ".join(w.capitalize() for w in re.split(r"[\._]", local))
             else:

@@ -9,10 +9,17 @@ COUNCIL_URL = "https://www.ville.sorel-tracy.qc.ca/ville/vos-elus/conseillers-et
 
 class SorelTracyPersonScraper(CanadianScraper):
     def scrape(self):
-        # Mayor
+        # Mayor — h1 contains "Maire" (page title), not the person's name
         mpage = self.lxmlize(MAYOR_URL)
-        name_h1 = mpage.xpath("//h1")
-        name = name_h1[0].text_content().strip() if name_h1 else ""
+        name_p = mpage.xpath(
+            '//p[contains(., "maire actuel") or contains(., "mairesse actuelle")]'
+        )
+        if name_p:
+            text = name_p[0].text_content().strip()
+            name_m = re.search(r"est M(?:me\.?|\.)\s+(.+?)\.?\s*$", text)
+            name = name_m.group(1).strip() if name_m else ""
+        else:
+            name = ""
         assert name, "Mayor name not found"
         email_a = mpage.xpath('.//a[starts-with(@href,"mailto:")]')
         email = email_a[0].get("href").replace("mailto:", "") if email_a else None

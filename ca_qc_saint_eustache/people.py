@@ -9,26 +9,28 @@ COUNCIL_URL = "https://www.saint-eustache.ca/ville/vie-democratique/conseil-muni
 class SaintEustachePersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_URL)
-        h3_nodes = page.xpath("//main//h3")
-        assert h3_nodes, "No member h3 found"
-        for h3 in h3_nodes:
-            name = h3.text_content().strip()
+        cards = page.xpath('//div[contains(@class,"c-rubric-card")]')
+        assert cards, "No c-rubric-card divs found"
+        for card in cards:
+            name_h3 = card.xpath('.//h3[contains(@class,"c-rubric-card__title")]')
+            if not name_h3:
+                continue
+            name = name_h3[0].text_content().strip()
             if not name:
                 continue
-            preceding_h2 = h3.xpath("preceding::h2[1]")
-            h2_text = preceding_h2[0].text_content().strip() if preceding_h2 else ""
-            if "Maire" in h2_text or "Mayor" in h2_text:
+            surtitle = card.xpath('.//span[contains(@class,"c-rubric-card__surtitle")]')
+            surtitle_text = surtitle[0].text_content().strip() if surtitle else ""
+            if "Maire" in surtitle_text and "Conseill" not in surtitle_text:
                 role, district = "Mayor", "Saint-Eustache"
             else:
-                m = re.search(r"District\s+(\d+)", h2_text, re.I)
+                m = re.search(r"District\s+(\d+)", surtitle_text, re.I)
                 if not m:
                     continue
                 role, district = "Councillor", f"District {int(m.group(1))}"
-            parent = h3.getparent()
-            email = self.get_email(parent, error=False)
-            phone_link = parent.xpath('.//a[starts-with(@href,"tel:")]')
+            email = self.get_email(card, error=False)
+            phone_link = card.xpath('.//a[starts-with(@href,"tel:")]')
             phone = phone_link[0].text_content().strip() if phone_link else None
-            image = parent.xpath(".//img/@src")
+            image = card.xpath(".//img/@src")
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_URL)
             if email:

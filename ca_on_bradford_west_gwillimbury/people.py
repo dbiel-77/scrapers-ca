@@ -22,7 +22,7 @@ class BradfordWestGwillimburyPersonScraper(CanadianScraper):
             elif "Deputy Mayor" in role_str:
                 role, district = "Councillor", "Deputy Mayor"
             else:
-                ward_m = re.search(r"Ward\s+(\d+)", role_str)
+                ward_m = re.search(r"War(?:d)?\s+(\d+)", role_str)
                 role = "Councillor"
                 district = f"Ward {ward_m.group(1)}" if ward_m else role_str
             # Walk up from img to find container with email link

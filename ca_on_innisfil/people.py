@@ -30,14 +30,21 @@ class InnisfilPersonScraper(CanadianScraper):
             if not pos_text:
                 pos_p = card.xpath('.//p[./strong[contains(.,"Position")]]')
                 pos_text = pos_p[0].text_content().replace("Position:", "").strip() if pos_p else ""
+            # Ward number is in a separate <strong>Ward:</strong> element (not in Position)
+            ward_strong = card.xpath('.//strong[contains(.,"Ward:")]')
+            ward_text = (
+                ward_strong[0].tail.strip()
+                if ward_strong and ward_strong[0].tail
+                else ""
+            )
             if "Mayor" in pos_text and "Deputy" not in pos_text:
                 role, district = "Mayor", "Innisfil"
             elif "Deputy Mayor" in pos_text:
                 role, district = "Councillor", "Deputy Mayor"
             else:
-                m = re.search(r"Ward\s+(\d+)", pos_text)
+                m = re.search(r"Ward\s+(\d+)", ward_text)
                 role = "Councillor"
-                district = f"Ward {m.group(1)}" if m else pos_text
+                district = f"Ward {m.group(1)}" if m else ward_text or pos_text
             email = self.get_email(card, error=False)
             phone_link = card.xpath('.//a[starts-with(@href,"tel:")]')
             phone = phone_link[0].text_content().strip() if phone_link else None
