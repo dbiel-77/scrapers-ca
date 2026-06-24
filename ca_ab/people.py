@@ -92,21 +92,17 @@ class AlbertaPersonScraper(CanadianScraper):
             )
             p.add_source(COUNCIL_PAGE)
             p.add_source(detail_url)
-            if mla["Email"]:
-                p.add_contact("email", mla["Email"])
-            elif mla.get("MLA Email"):
+            email = mla.get("Email", "")
+            if email and "@" in email:
+                p.add_contact("email", email)
+            elif mla.get("MLA Email") and "@" in mla["MLA Email"]:
                 p.add_contact("email", mla["MLA Email"])
 
-            address_type_map = {
-                "Legislature Office": "legislature",
-                "Constituency Office": "constituency",
-            }
             addresses = []
-            for suffix in (1, 2):
-                addr_type = mla.get(f"Address Type {suffix}", "").strip()
-                if addr_type:
-                    note = address_type_map.get(addr_type, "constituency")
-                    addresses.append((suffix, note))
+            if mla["Address Type 1"].strip() == "Legislature Office":
+                addresses.append((1, "legislature"))
+            if mla.get("Address Type 2", "").strip() == "Constituency Office":
+                addresses.append((2, "constituency"))
 
             for suffix, note in addresses:
                 for key, contact_type in (("Phone", "voice"), ("Fax", "fax")):
