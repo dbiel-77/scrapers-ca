@@ -24,18 +24,14 @@ class VaudreuilDorionPersonScraper(CanadianScraper):
             if is_mayor or "c-team_mayor" in (card.get("class") or ""):
                 role, district = "Mayor", "Vaudreuil-Dorion"
             else:
-                num_div = card.xpath(
-                    './/div[translate(normalize-space(.), "0123456789", "") = ""]'
-                )
+                num_div = card.xpath('.//div[translate(normalize-space(.), "0123456789", "") = ""]')
                 num = int(num_div[0].text_content().strip()) if num_div else None
                 if num is None:
                     continue
                 role, district = "Councillor", f"District {num}"
             email_el = ppage.xpath('.//a[starts-with(@href,"mailto:")]')
             email = email_el[0].get("href").replace("mailto:", "") if email_el else None
-            image = ppage.xpath(
-                '//img[contains(@src,"/sites/default/") or contains(@src,"/media/")]/@src'
-            )
+            image = ppage.xpath('//img[contains(@src,"/sites/default/") or contains(@src,"/media/")]/@src')
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(LISTING_URL)
             p.add_source(profile_url)

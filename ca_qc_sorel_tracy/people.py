@@ -11,9 +11,7 @@ class SorelTracyPersonScraper(CanadianScraper):
     def scrape(self):
         # Mayor — h1 contains "Maire" (page title), not the person's name
         mpage = self.lxmlize(MAYOR_URL)
-        name_p = mpage.xpath(
-            '//p[contains(., "maire actuel") or contains(., "mairesse actuelle")]'
-        )
+        name_p = mpage.xpath('//p[contains(., "maire actuel") or contains(., "mairesse actuelle")]')
         if name_p:
             text = name_p[0].text_content().strip()
             name_m = re.search(r"est M(?:me\.?|\.)\s+(.+?)\.?\s*$", text)
