@@ -16,12 +16,12 @@ class HaltonHills(CanadianJurisdiction):
         organization.add_post(role="Mayor", label=self.division_name, division_id=self.division_id)
         organization.add_post(
             role="Regional Councillor",
-            label="Wards 1 & 2",
+            label="Wards 1 and 2",
             division_id=f"{self.division_id}/ward:1-2",
         )
         organization.add_post(
             role="Regional Councillor",
-            label="Wards 3 & 4",
+            label="Wards 3 and 4",
             division_id=f"{self.division_id}/ward:3-4",
         )
         for ward_number in range(1, 5):

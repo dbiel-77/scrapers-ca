@@ -7,8 +7,8 @@ COUNCIL_PAGE = "https://www.haltonhills.ca/en/your-government/elected-officials.
 
 MEMBERS = [
     ("Ann Lawlor", "Mayor", "Halton Hills", "Ann Lawlors"),
-    ("Clark Somerville", "Regional Councillor", "Wards 1 & 2", "Clark Somerville"),
-    ("Jane Fogal", "Regional Councillor", "Wards 3 & 4", "Jane Fogal"),
+    ("Clark Somerville", "Regional Councillor", "Wards 1 and 2", "Clark Somerville"),
+    ("Jane Fogal", "Regional Councillor", "Wards 3 and 4", "Jane Fogal"),
     ("Alex Hilson", "Councillor", "Ward 1 (seat 1)", "Alex Hilson"),
     ("Michael Albano", "Councillor", "Ward 1 (seat 2)", "Mike Albano"),
     ("Jason Brass", "Councillor", "Ward 2 (seat 1)", "Jason Brass"),

@@ -14,7 +14,7 @@ class BellevillePersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(MAYOR_PAGE)
 
-        name = page.xpath('//div[contains(@class, "text base-text")]/p/text()')[0].split(" is the ")[0]
+        name = page.xpath('//div[contains(@class, "text base-text")]/p[contains(text(), " is the ")]/text()')[0].split(" is the ")[0]
         phone = self.get_phone(page)
         email = self.get_email(page)
         image = page.xpath('//img[contains(@src, "/media/") and not(contains(@src, "logo"))]/@src')[0]
