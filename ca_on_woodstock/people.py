@@ -37,9 +37,7 @@ class WoodstockPersonScraper(CanadianScraper):
             phone = self.get_phone(block, area_codes=[519, 226, 548], error=False)
             image = block.xpath(".//img/@src")
 
-            p = Person(
-                primary_org="legislature", name=name, district=district, role=current_role
-            )
+            p = Person(primary_org="legislature", name=name, district=district, role=current_role)
             p.add_source(COUNCIL_PAGE)
             if phone:
                 p.add_contact("voice", phone, "legislature")

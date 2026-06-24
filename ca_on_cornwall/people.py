@@ -8,9 +8,7 @@ class CornwallPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
 
-        mayor_blocks = page.xpath(
-            '//div[contains(@class,"text base-text")][.//h2[normalize-space()="Mayor"]]'
-        )
+        mayor_blocks = page.xpath('//div[contains(@class,"text base-text")][.//h2[normalize-space()="Mayor"]]')
         assert mayor_blocks, "Mayor block not found"
         mayor_block = mayor_blocks[0]
         bio_texts = mayor_block.xpath(".//p/text()")

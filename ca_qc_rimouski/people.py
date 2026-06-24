@@ -29,9 +29,7 @@ class RimouskiPersonScraper(CanadianScraper):
                 role = "Councillor"
                 district = f"District {m.group(1)}" if m else h6_text
 
-            email_links = card.xpath(
-                ".//a[starts-with(@href,'mailto:') and not(contains(@href,'?Subject='))]/@href"
-            )
+            email_links = card.xpath(".//a[starts-with(@href,'mailto:') and not(contains(@href,'?Subject='))]/@href")
             email = email_links[0].replace("mailto:", "") if email_links else None
             phone = self.get_phone(card, area_codes=[418], error=False)
             image = card.xpath(".//picture/img/@src")
