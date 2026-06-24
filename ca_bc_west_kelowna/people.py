@@ -9,9 +9,7 @@ COUNCIL_URL = "https://www.westkelownacity.ca/city-hall/mayor-and-council/contac
 class WestKelownaPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_URL)
-        h4_nodes = page.xpath(
-            '//h4[contains(., "Contact Mayor") or contains(., "Contact Councillor")]'
-        )
+        h4_nodes = page.xpath('//h4[contains(., "Contact Mayor") or contains(., "Contact Councillor")]')
         assert h4_nodes, "No council member headings found"
         seat = 0
         for h4 in h4_nodes:
@@ -36,11 +34,7 @@ class WestKelownaPersonScraper(CanadianScraper):
                 local = email.split("@")[0]
                 name = " ".join(w.capitalize() for w in re.split(r"[\._]", local))
             else:
-                name = (
-                    header.replace("Contact Mayor ", "")
-                    .replace("Contact Councillor ", "")
-                    .strip()
-                )
+                name = header.replace("Contact Mayor ", "").replace("Contact Councillor ", "").strip()
             phone_li_texts = container.xpath(".//li//text()")
             if container.getparent() is not None:
                 phone_li_texts += container.getparent().xpath(".//li//text()")

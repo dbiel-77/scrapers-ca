@@ -10,9 +10,7 @@ BASE = "https://www.timmins.ca"
 class TimminsPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(LISTING_URL)
-        member_links = list(
-            dict.fromkeys(page.xpath('//a[contains(@href,"portalId=11976429")]/@href'))
-        )
+        member_links = list(dict.fromkeys(page.xpath('//a[contains(@href,"portalId=11976429")]/@href')))
         assert member_links, "No member CMS links found"
         ward5_seat = 0
         for href in member_links:
@@ -23,9 +21,7 @@ class TimminsPersonScraper(CanadianScraper):
             if not name:
                 continue
             body_text = " ".join(ppage.xpath("//body//text()"))
-            if re.search(r"\bMayor\b", body_text) and not re.search(
-                r"\bWard\b", body_text, re.I
-            ):
+            if re.search(r"\bMayor\b", body_text) and not re.search(r"\bWard\b", body_text, re.I):
                 role, district = "Mayor", "Timmins"
             else:
                 ward_m = re.search(r"Ward\s+(\d+)", body_text, re.I)

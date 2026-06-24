@@ -47,9 +47,7 @@ class SorelTracyPersonScraper(CanadianScraper):
             phone_link = block.xpath('.//a[starts-with(@href,"tel:")]')
             phone = phone_link[0].text_content().strip() if phone_link else None
             image = block.xpath(".//img/@src")
-            p = Person(
-                primary_org="legislature", name=name, district=district, role="Councillor"
-            )
+            p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
             p.add_source(COUNCIL_URL)
             if email:
                 p.add_contact("email", email)

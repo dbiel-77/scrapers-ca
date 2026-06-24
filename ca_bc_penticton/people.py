@@ -7,9 +7,7 @@ COUNCIL_URL = "https://www.penticton.ca/city-hall/city-council/meet-your-city-co
 class PentictonPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_URL)
-        rows = page.xpath(
-            '//div[contains(@class,"list-item--simple") and contains(@class,"views-row")]'
-        )
+        rows = page.xpath('//div[contains(@class,"list-item--simple") and contains(@class,"views-row")]')
         assert rows, "No council member rows found"
         seat = 0
         for row in rows:
@@ -27,9 +25,7 @@ class PentictonPersonScraper(CanadianScraper):
             image = []
             if name_a and name_a[0].get("href"):
                 href = name_a[0].get("href")
-                profile_url = (
-                    href if href.startswith("http") else f"https://www.penticton.ca{href}"
-                )
+                profile_url = href if href.startswith("http") else f"https://www.penticton.ca{href}"
                 try:
                     ppage = self.lxmlize(profile_url)
                     image = ppage.xpath("//article//img/@src")

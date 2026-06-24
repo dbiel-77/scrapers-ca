@@ -35,16 +35,8 @@ class BradfordWestGwillimburyPersonScraper(CanadianScraper):
                 if email_a:
                     break
                 container = container.getparent()
-            email = (
-                email_a[0].get("href").replace("mailto:", "")
-                if (container is not None and email_a)
-                else None
-            )
-            phone_link = (
-                container.xpath('.//a[starts-with(@href,"tel:")]')
-                if container is not None
-                else []
-            )
+            email = email_a[0].get("href").replace("mailto:", "") if (container is not None and email_a) else None
+            phone_link = container.xpath('.//a[starts-with(@href,"tel:")]') if container is not None else []
             if phone_link:
                 phone = phone_link[0].text_content().strip()
             else:
