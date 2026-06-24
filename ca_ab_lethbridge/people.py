@@ -1,8 +1,9 @@
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
-COUNCIL_PAGE = "https://www.lethbridge.ca/council-administration-governance/mayor-and-councillors/councillors-office"
-MAYOR_PAGE = "https://www.lethbridge.ca/council-administration-governance/mayor-and-councillors/mayors-office"
+BASE_URL = "https://www.lethbridge.ca"
+COUNCIL_PAGE = f"{BASE_URL}/council-administration-governance/mayor-and-councillors/councillors-office"
+MAYOR_PAGE = f"{BASE_URL}/council-administration-governance/mayor-and-councillors/mayors-office"
 
 
 class LethbridgePersonScraper(CanadianScraper):
@@ -33,7 +34,9 @@ class LethbridgePersonScraper(CanadianScraper):
             role="Councillor",
         )
 
-        p.image = page.xpath('//span[contains(@class, "img-right")]/img/@src[1]')[0]
+        imgs = page.xpath('//img[contains(@src, "/media/") and not(contains(@src, "logo"))]/@src')
+        if imgs:
+            p.image = imgs[0] if imgs[0].startswith("http") else BASE_URL + imgs[0]
         p.add_source(COUNCIL_PAGE)
         p.add_source(url)
 
@@ -43,11 +46,13 @@ class LethbridgePersonScraper(CanadianScraper):
         yield self.scrape_mayor()
 
         page = self.lxmlize(COUNCIL_PAGE)
-        councillors = page.xpath('//div[contains(@class, "inner ")]/a[@href]')
-        assert len(councillors), "No councillors found"
-        for seat_number, councillor in enumerate(councillors):
-            name = councillor.xpath(".//span")[0].text_content()
-            if "Vacant" in name:
-                continue
-            url = councillor.xpath("./@href")[0]
+        seen = set()
+        councillor_urls = []
+        for a in page.xpath('//a[contains(@href, "-councillor/")]'):
+            href = a.get("href")
+            if href not in seen and href != COUNCIL_PAGE.replace(BASE_URL, ""):
+                seen.add(href)
+                councillor_urls.append(href if href.startswith("http") else BASE_URL + href)
+        assert councillor_urls, "No councillors found"
+        for seat_number, url in enumerate(councillor_urls):
             yield self.scrape_person(url, seat_number)
