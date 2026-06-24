@@ -1,3 +1,5 @@
+import re
+
 from utils import CUSTOM_USER_AGENT, CanadianScraper
 from utils import CanadianPerson as Person
 
@@ -17,9 +19,8 @@ class CapeBretonPersonScraper(CanadianScraper):
 
             name = cpage.xpath("//h1/text()")[0].strip()
 
-            district_text = cpage.xpath("//h2/text()")[0].strip()
-            # e.g. "District 6 & Deputy Mayor" or "District 1"
-            district = district_text.split("&")[0].strip()
+            district_match = re.search(r"/district-(\d+)/", url)
+            district = f"District {district_match.group(1)}" if district_match else cpage.xpath("//h2/text()")[0].strip().split("&")[0].strip()
 
             phone = self.get_phone(cpage, error=False)
             email = self.get_email(cpage, error=False)

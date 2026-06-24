@@ -17,7 +17,8 @@ class NovaScotiaPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
         members = page.xpath(
-            '//div[contains(@class, "view-display-id-page_mlas_current_tiles")]//div[contains(@class, "views-row-")]'
+            '//div[contains(@class, "view-display-id-page_mlas_current_tiles")]'
+            '/following-sibling::div[contains(@class, "views-row-")]'
         )
         assert len(members), "No members found"
         for member in members:

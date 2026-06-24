@@ -40,8 +40,8 @@ class StJohnsPersonScraper(CanadianScraper):
                     district = f"St. John's (seat {councillor_seat_number})"
                     councillor_seat_number += 1
 
-            email = self.get_email(profile_page)
-            phone = self.get_phone(profile_page)
+            email = self.get_email(profile_page, error=False)
+            phone = self.get_phone(profile_page, error=False)
             photo_nodes = profile_page.xpath('//img[contains(@src, "/media/")]/@src')
             photo = photo_nodes[0] if photo_nodes else None
             if photo and not photo.startswith("http"):
@@ -50,8 +50,10 @@ class StJohnsPersonScraper(CanadianScraper):
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             if photo:
                 p.image = photo
-            p.add_contact("voice", phone, "legislature")
-            p.add_contact("email", email)
+            if phone:
+                p.add_contact("voice", phone, "legislature")
+            if email:
+                p.add_contact("email", email)
             p.add_source(COUNCIL_PAGE)
             p.add_source(url)
 
