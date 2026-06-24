@@ -31,10 +31,13 @@ class TimminsPersonScraper(CanadianScraper):
         # Councillors — filter to pageIds >= 19111000 to exclude nav links
         page = self.lxmlize(LISTING_URL)
         all_links = page.xpath('//a[contains(@href,"portalId=11976429")]/@href')
-        member_links = list(dict.fromkeys(
-            h for h in all_links
-            if re.search(r"pageId=(\d+)", h) and int(re.search(r"pageId=(\d+)", h).group(1)) >= 19111000
-        ))
+        member_links = list(
+            dict.fromkeys(
+                h
+                for h in all_links
+                if re.search(r"pageId=(\d+)", h) and int(re.search(r"pageId=(\d+)", h).group(1)) >= 19111000
+            )
+        )
         assert member_links, "No councillor CMS links found"
         ward5_seat = 0
         for href in member_links:
