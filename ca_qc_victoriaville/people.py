@@ -31,7 +31,8 @@ class VictoriavillePersonScraper(CanadianScraper):
 
             email_links = section.xpath(".//a[contains(@href,'mailto:')]/@href")
             email = email_links[0].replace("mailto:", "") if email_links else None
-            phone = self.get_phone(section, area_codes=[819], error=False)
+            phone_link = section.xpath('.//a[starts-with(@href,"tel:")]')
+            phone = phone_link[0].text_content().strip() if phone_link else None
             image = section.xpath(".//figure//img/@src")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)

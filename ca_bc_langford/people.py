@@ -13,7 +13,7 @@ class LangfordPersonScraper(CanadianScraper):
         seat = 0
         for bio in bios:
             title_els = bio.xpath(".//div[contains(@class,'bio-title')]")
-            position_els = bio.xpath(".//div[contains(@class,'bio-position')]")
+            position_els = bio.xpath(".//*[contains(@class,'bio-position')]")
             if not title_els or not position_els:
                 continue
 

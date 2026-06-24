@@ -12,7 +12,8 @@ class ShawiniganPersonScraper(CanadianScraper):
         assert name_p, "Mayor name paragraph not found"
         name = name_p[0].text_content().split(",")[0].strip()
         email = self.get_email(page, error=False)
-        phone = self.get_phone(page, area_codes=[819], error=False)
+        phone_link = page.xpath('.//a[starts-with(@href,"tel:")]')
+        phone = phone_link[0].text_content().strip() if phone_link else None
 
         p = Person(primary_org="legislature", name=name, district="Shawinigan", role="Mayor")
         p.add_source(MAYOR_URL)
@@ -52,7 +53,8 @@ class ShawiniganPersonScraper(CanadianScraper):
                 continue
 
             email = contact_ps[0].xpath("a/@href")[0].replace("mailto:", "")
-            phone = self.get_phone(dpage, area_codes=[819, 873], error=False)
+            phone_link = dpage.xpath('.//a[starts-with(@href,"tel:")]')
+            phone = phone_link[0].text_content().strip() if phone_link else None
             image = dpage.xpath('//article//img[not(contains(@src,"logo"))]/@src')
 
             p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
