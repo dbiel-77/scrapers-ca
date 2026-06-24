@@ -20,7 +20,11 @@ class CapeBretonPersonScraper(CanadianScraper):
             name = cpage.xpath("//h1/text()")[0].strip()
 
             district_match = re.search(r"/district-(\d+)/", url)
-            district = f"District {district_match.group(1)}" if district_match else cpage.xpath("//h2/text()")[0].strip().split("&")[0].strip()
+            district = (
+                f"District {district_match.group(1)}"
+                if district_match
+                else cpage.xpath("//h2/text()")[0].strip().split("&")[0].strip()
+            )
 
             phone = self.get_phone(cpage, area_codes=[902], error=False)
             email = self.get_email(cpage, error=False)
