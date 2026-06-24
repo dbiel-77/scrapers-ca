@@ -28,7 +28,15 @@ class WestKelownaPersonScraper(CanadianScraper):
             if not email_a and container.getparent() is not None:
                 email_a = container.getparent().xpath('.//a[starts-with(@href,"mailto:")]')
             email = email_a[0].get("href").replace("mailto:", "") if email_a else None
-            # Full name from first bio paragraph: "Gord Milsom was elected..." → "Gord Milsom"
+            header_name = re.sub(r"^Contact (?:Mayor|Councillor)\s+", "", header).strip()
+            email_name = None
+            if email and "mayorandcouncil" not in email:
+                first_name = re.split(r"[\._]", email.split("@")[0], maxsplit=1)[0].capitalize()
+                if header_name:
+                    email_name = f"{first_name} {header_name}"
+                else:
+                    email_name = " ".join(w.capitalize() for w in re.split(r"[\._]", email.split("@")[0]))
+            # Full name from first bio paragraph: "Gord Milsom was elected..." -> "Gord Milsom"
             bio_texts = []
             for search_el in [container, container.getparent()]:
                 if search_el is None:
@@ -38,15 +46,14 @@ class WestKelownaPersonScraper(CanadianScraper):
                     break
             first_sent = " ".join(t.strip() for t in bio_texts if t.strip()).split(".")[0]
             bio_m = re.match(r"^(.+?)\s+(?:was|has|is|served)\b", first_sent)
-            if bio_m:
+            if email_name:
+                name = email_name
+            elif bio_m:
                 name = bio_m.group(1).strip()
             elif name_el:
                 name = name_el[0].text_content().strip()
-            elif email and "mayorandcouncil" not in email:
-                local = email.split("@")[0]
-                name = " ".join(w.capitalize() for w in re.split(r"[\._]", local))
             else:
-                name = header.replace("Contact Mayor ", "").replace("Contact Councillor ", "").strip()
+                name = header_name
             phone_li_texts = container.xpath(".//li//text()")
             if container.getparent() is not None:
                 phone_li_texts += container.getparent().xpath(".//li//text()")
