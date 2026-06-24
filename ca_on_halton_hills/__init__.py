@@ -17,12 +17,12 @@ class HaltonHills(CanadianJurisdiction):
         organization.add_post(
             role="Regional Councillor",
             label="Wards 1 and 2",
-            division_id=f"{self.division_id}/ward:1-2",
+            division_id=self.division_id,
         )
         organization.add_post(
             role="Regional Councillor",
             label="Wards 3 and 4",
-            division_id=f"{self.division_id}/ward:3-4",
+            division_id=self.division_id,
         )
         for ward_number in range(1, 5):
             for seat_number in range(1, 3):
