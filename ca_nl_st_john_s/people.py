@@ -15,7 +15,8 @@ class StJohnsPersonScraper(CanadianScraper):
             if not url.startswith("http"):
                 url = "https://www.stjohns.ca" + url
             profile_page = self.lxmlize(url)
-            h1_text = profile_page.xpath("//h1")[0].text_content().strip()
+            h1_elements = profile_page.xpath("//main//h1") or profile_page.xpath("//h1")
+            h1_text = h1_elements[0].text_content().strip()
             # h1 is "Mayor Name", "Deputy Mayor Name", or "Councillor Name"
             if h1_text.startswith("Deputy Mayor "):
                 role = "Deputy Mayor"
@@ -23,9 +24,11 @@ class StJohnsPersonScraper(CanadianScraper):
             elif h1_text.startswith("Mayor "):
                 role = "Mayor"
                 name = h1_text[len("Mayor ") :]
-            else:
+            elif h1_text.startswith("Councillor "):
                 role = "Councillor"
                 name = h1_text[len("Councillor ") :]
+            else:
+                continue
 
             # Find district from first paragraph text
             paragraphs = profile_page.xpath("//main//p")
