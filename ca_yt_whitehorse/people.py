@@ -20,11 +20,11 @@ class WhitehorsePersonScraper(CanadianScraper):
 
             if first_line.startswith("Mayor "):
                 role = "Mayor"
-                name = first_line[len("Mayor "):]
+                name = first_line[len("Mayor ") :]
                 district = "Whitehorse"
             elif first_line.startswith("Councillor "):
                 role = "Councillor"
-                name = first_line[len("Councillor "):]
+                name = first_line[len("Councillor ") :]
                 seat += 1
                 district = f"Whitehorse (seat {seat})"
             else:
