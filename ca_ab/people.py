@@ -97,15 +97,16 @@ class AlbertaPersonScraper(CanadianScraper):
             elif mla.get("MLA Email"):
                 p.add_contact("email", mla["MLA Email"])
 
-            addresses = [(1, "legislature"), (2, "constituency")]
-            if not mla["Address Type 1"].strip():
-                addresses.pop(0)
-            else:
-                assert mla["Address Type 1"] == "Legislature Office"
-            if not mla["Address Type 2"]:
-                addresses.pop()
-            else:
-                assert mla["Address Type 2"] == "Constituency Office"
+            address_type_map = {
+                "Legislature Office": "legislature",
+                "Constituency Office": "constituency",
+            }
+            addresses = []
+            for suffix in (1, 2):
+                addr_type = mla.get(f"Address Type {suffix}", "").strip()
+                if addr_type:
+                    note = address_type_map.get(addr_type, "constituency")
+                    addresses.append((suffix, note))
 
             for suffix, note in addresses:
                 for key, contact_type in (("Phone", "voice"), ("Fax", "fax")):
