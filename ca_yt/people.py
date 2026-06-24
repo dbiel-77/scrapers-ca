@@ -2,20 +2,19 @@ from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 COUNCIL_PAGE = "https://yukonassembly.ca/mlas"
+_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 
-# This website uses Cloudflare bot products (setting a __cf_bm cookie), which is hard to circumvent.
-# https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/
 class YukonPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.cloudscrape(COUNCIL_PAGE)
+        page = self.lxmlize(COUNCIL_PAGE, user_agent=_UA)
 
         members = page.xpath('//*[@id="block-views-block-members-listing-block-1"]/div/div/div[2]/div')
         assert len(members), "No members found"
         for member in members:
             if "Vacant" not in member.xpath("./div/span")[0].text_content():
                 url = member.xpath("./div/span/a/@href")[0].strip()
-                page = self.cloudscrape(url)
+                page = self.lxmlize(url, user_agent=_UA)
                 name = page.xpath("//html/body/div[1]/div/div/section/div[2]/article/div/h1/span/span")[
                     0
                 ].text_content()
@@ -32,9 +31,9 @@ class YukonPersonScraper(CanadianScraper):
                 image_from_cf = page.xpath('//article[contains(@class, "member")]/p/img/@data-cfsrc')
 
                 if image_from_src:
-                    p.image = "https://yukonassmebly.ca" + image_from_src[0]
+                    p.image = image_from_src[0]
                 if image_from_cf:
-                    p.image = "https://yukonassmebly.ca" + image_from_cf[0]
+                    p.image = "https://yukonassembly.ca" + image_from_cf[0]
 
                 contact = page.xpath('//article[contains(@class, "members-sidebar")]')[0]
                 website = contact.xpath("./div[3]/div[3]/div[2]/a")
@@ -44,7 +43,7 @@ class YukonPersonScraper(CanadianScraper):
                 def handle_address(p, lines, address_type):
                     address_lines = []
                     for line in lines:
-                        if line.endswith(":"):  # Room:, Phone:, Fax:
+                        if line.endswith(":"):
                             break
                         address_lines.append(line)
                     if address_lines:
