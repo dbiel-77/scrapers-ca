@@ -1,5 +1,3 @@
-import re
-
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
@@ -9,38 +7,22 @@ COUNCIL_URL = "https://www.innisfil.ca/government-administration/council-committ
 class InnisfilPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_URL)
-        name_links = page.xpath('//h3/a[contains(@href,"/members-council/")]')
-        assert name_links, "No council member links found"
-        for a in name_links:
-            name = a.text_content().strip()
+        cards = page.xpath('//div[contains(@class, "views-row")][.//h3/a[contains(@href,"/members-council/")]]')
+        assert len(cards), "No council member cards found"
+        for card in cards:
+            name = card.xpath('normalize-space(.//h3/a[contains(@href,"/members-council/")])')
             if not name:
                 continue
-            # Walk up to find card container with <p><strong> elements
-            card = a.getparent()
-            for _ in range(10):
-                if card is None:
-                    break
-                if card.xpath(".//p[./strong]"):
-                    break
-                card = card.getparent()
-            if card is None:
-                continue
-            pos_strong = card.xpath('.//strong[contains(.,"Position")]')
-            pos_text = pos_strong[0].tail.strip() if pos_strong and pos_strong[0].tail else ""
-            if not pos_text:
-                pos_p = card.xpath('.//p[./strong[contains(.,"Position")]]')
-                pos_text = pos_p[0].text_content().replace("Position:", "").strip() if pos_p else ""
-            # Ward number is in a separate <strong>Ward:</strong> element (not in Position)
-            ward_strong = card.xpath('.//strong[contains(.,"Ward:")]')
-            ward_text = ward_strong[0].tail.strip() if ward_strong and ward_strong[0].tail else ""
+
+            pos_text = card.xpath('normalize-space(.//div[contains(@class, "views-field-field-position")]//span[contains(@class, "field-content")])')
+            ward_text = card.xpath('normalize-space(.//div[contains(@class, "views-field-field-ward")]//span[contains(@class, "field-content")])')
             if "Mayor" in pos_text and "Deputy" not in pos_text:
                 role, district = "Mayor", "Innisfil"
             elif "Deputy Mayor" in pos_text:
                 role, district = "Councillor", "Deputy Mayor"
             else:
-                m = re.search(r"Ward\s+(\d+)", ward_text)
                 role = "Councillor"
-                district = f"Ward {m.group(1)}" if m else ward_text or pos_text
+                district = ward_text
             email = self.get_email(card, error=False)
             phone_link = card.xpath('.//a[starts-with(@href,"tel:")]')
             phone = phone_link[0].text_content().strip() if phone_link else None

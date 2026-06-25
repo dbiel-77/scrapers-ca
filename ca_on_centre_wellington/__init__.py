@@ -17,6 +17,6 @@ class CentreWellington(CanadianJurisdiction):
             organization.add_post(
                 role="Councillor",
                 label=f"Ward {ward_number}",
-                division_id=f"{self.division_id}/ward:{ward_number}",
+                division_id=self.division_id,
             )
         yield organization

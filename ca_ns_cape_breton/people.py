@@ -8,6 +8,12 @@ MAYOR_PAGE = "https://cbrm.ns.ca/city-hall/mayors-office/"
 
 
 class CapeBretonPersonScraper(CanadianScraper):
+    def get_cape_breton_phone(self, page):
+        phone = self.get_phone(page, area_codes=[902], error=False)
+        if phone and len(re.sub(r"\D", "", phone)) >= 10:
+            return phone
+        return None
+
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE, user_agent=CUSTOM_USER_AGENT)
 
@@ -26,7 +32,7 @@ class CapeBretonPersonScraper(CanadianScraper):
                 else cpage.xpath("//h2/text()")[0].strip().split("&")[0].strip()
             )
 
-            phone = self.get_phone(cpage, area_codes=[902], error=False)
+            phone = self.get_cape_breton_phone(cpage)
             email = self.get_email(cpage, error=False)
             image = cpage.xpath("//img[contains(@alt, 'Councillor')]/@src")
 
@@ -46,7 +52,7 @@ class CapeBretonPersonScraper(CanadianScraper):
 
         # h1 is "Mayor's Office"; the mayor's name is in the first h2
         name = mayorpage.xpath("//h2/text()")[0].strip()
-        phone = self.get_phone(mayorpage, error=False)
+        phone = self.get_cape_breton_phone(mayorpage)
         email = self.get_email(mayorpage, error=False)
         image = mayorpage.xpath('//img[contains(@alt, "Mayor")]/@src')
 
