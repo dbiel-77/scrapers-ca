@@ -23,11 +23,7 @@ class OshawaPersonScraper(CanadianScraper):
             h3_idx = children.index(h3)
             # Collect sibling elements up to the next h3 or img (next member boundary)
             next_boundary = next(
-                (
-                    i
-                    for i, el in enumerate(children[h3_idx + 1 :], h3_idx + 1)
-                    if el.tag in ("h3", "img")
-                ),
+                (i for i, el in enumerate(children[h3_idx + 1 :], h3_idx + 1) if el.tag in ("h3", "img")),
                 len(children),
             )
             member_els = children[h3_idx + 1 : next_boundary]
@@ -48,11 +44,7 @@ class OshawaPersonScraper(CanadianScraper):
                 role = "Regional Councillor" if "Regional" in role_desc else "Councillor"
 
             # Image from preceding img sibling
-            img_els = [
-                children[i]
-                for i in range(h3_idx - 1, max(-1, h3_idx - 4), -1)
-                if children[i].tag == "img"
-            ]
+            img_els = [children[i] for i in range(h3_idx - 1, max(-1, h3_idx - 4), -1) if children[i].tag == "img"]
             photo_url = img_els[0].get("src") if img_els else None
 
             phone = None
@@ -70,9 +62,7 @@ class OshawaPersonScraper(CanadianScraper):
                     elif href:
                         links.append(href)
 
-            p = Person(
-                primary_org="legislature", name=name, district=district, role=role, image=photo_url
-            )
+            p = Person(primary_org="legislature", name=name, district=district, role=role, image=photo_url)
             p.add_source(COUNCIL_PAGE)
             if phone:
                 p.add_contact("voice", phone, "legislature")
