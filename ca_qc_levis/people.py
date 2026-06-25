@@ -39,7 +39,7 @@ class LevisPersonScraper(CanadianScraper):
                 role = "Maire"
                 district = "Lévis"
 
-            if role == "Conseillère":
+            if role.startswith("Conseiller") or role.startswith("Conseillère"):
                 role = "Conseiller"
 
             photo_url = person.xpath(".//img/@src")[0]

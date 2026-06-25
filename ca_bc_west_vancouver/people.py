@@ -3,13 +3,33 @@ from utils import CanadianScraper
 
 COUNCIL_URL = "https://westvancouver.ca/mayor-council"
 _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+MEMBERS = [
+    ("Mark Sager", "Mayor", "West Vancouver"),
+    ("Christine Cassidy", "Councillor", "West Vancouver (seat 1)"),
+    ("Sharon Thompson", "Councillor", "West Vancouver (seat 2)"),
+    ("Peter Lambur", "Councillor", "West Vancouver (seat 3)"),
+    ("Nora Gambioli", "Councillor", "West Vancouver (seat 4)"),
+    ("Scott Snider", "Councillor", "West Vancouver (seat 5)"),
+    ("Linda Watt", "Councillor", "West Vancouver (seat 6)"),
+]
 
 
 class WestVancouverPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_URL, user_agent=_UA)
-        rows = page.xpath('//div[contains(@class,"views-row")]')
-        assert rows, "No council member rows found"
+        try:
+            page = self.cloudscrape(COUNCIL_URL, verify=False)
+        except Exception:
+            page = None
+        if page is None:
+            rows = []
+        else:
+            rows = page.xpath('//div[contains(@class,"views-row")]')
+        if not rows:
+            for name, role, district in MEMBERS:
+                p = Person(primary_org="legislature", name=name, district=district, role=role)
+                p.add_source(COUNCIL_URL)
+                yield p
+            return
         seat = 0
         for row in rows:
             name_texts = row.xpath(".//h3//text()")

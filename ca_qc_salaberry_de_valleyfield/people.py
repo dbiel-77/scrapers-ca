@@ -5,17 +5,18 @@ from utils import CanadianScraper
 
 LISTING_URL = "https://ville.valleyfield.qc.ca/conseil-municipal/"
 BASE = "https://ville.valleyfield.qc.ca"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36"
 
 
 class SalaberryDeValleyfieldPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(LISTING_URL)
+        page = self.lxmlize(LISTING_URL, user_agent=USER_AGENT)
         profile_links = list(dict.fromkeys(page.xpath('//h3/a[contains(@href,"/conseil-municipal/")]/@href')))
         assert profile_links, "No member profile links found"
         seat = 0
         for href in profile_links:
             url = BASE + href if not href.startswith("http") else href
-            ppage = self.lxmlize(url)
+            ppage = self.lxmlize(url, user_agent=USER_AGENT)
             name = ppage.xpath("//h1")[0].text_content().strip() if ppage.xpath("//h1") else ""
             if not name:
                 continue

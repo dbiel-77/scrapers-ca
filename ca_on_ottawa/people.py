@@ -17,4 +17,9 @@ class OttawaPersonScraper(CSVScraper):
         "first name": {
             "StÃ©phanie": "Stéphanie",
         },
+        "district name": {
+            "OrlÃ©ans East-Cumberland": "Orléans East-Cumberland",
+            "OrlÃ©ans West-Innes": "Orléans West-Innes",
+            "OrlÃ©ans South-Navan": "Orléans South-Navan",
+        },
     }

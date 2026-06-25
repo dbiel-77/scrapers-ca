@@ -3,7 +3,7 @@ import re
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
-COUNCIL_PAGE = "http://www.assnat.qc.ca/fr/deputes/index.html"
+COUNCIL_PAGE = "https://www.assnat.qc.ca/fr/deputes/index.html"
 
 # Waiting for access to https://docs.google.com/spreadsheets/d/1ZV099FpBe1V9hLJNthw5bYyu6LjpC7fcjZUqEVJKhis/edit#gid=1522630662
 SOCIAL_MEDIA_DATA = {
@@ -212,10 +212,10 @@ class QuebecPersonScraper(CanadianScraper):
             email = self.get_email(row[3], error=False)
 
             detail_url = row[0][0].attrib["href"]
-            detail_page = self.lxmlize(detail_url)
+            detail_page = self.lxmlize(detail_url, verify=False)
 
             contact_url = detail_url.replace("index.html", "coordonnees.html")
-            contact_page = self.lxmlize(contact_url)
+            contact_page = self.lxmlize(contact_url, verify=False)
 
             photo_url = detail_page.xpath('//img[@class="photoDepute"]/@src')
 
@@ -255,7 +255,7 @@ class QuebecPersonScraper(CanadianScraper):
                     if address:
                         p.add_contact("address", "\n".join(address), note)
 
-            en_detail_page = self.lxmlize(detail_url.replace("/fr/", "/en/"))
+            en_detail_page = self.lxmlize(detail_url.replace("/fr/", "/en/"), verify=False)
             # roles = detail_page.xpath(
             #     '//ul/h4[contains(.,"Fonctions actuelles")]/following-sibling::li[preceding-sibling::h4[contains(.,"Fonctions actuelles")] and following-sibling::h4[contains(.,"Fonctions précédentes") or contains(.,"")]]/text()'
             # )
