@@ -4,7 +4,7 @@ from collections import defaultdict
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
-COUNCIL_PAGE = "https://www.townofstratford.ca/government/about_our_government/mayor_council"
+COUNCIL_PAGE = "https://townofstratford.ca/government-services/town-governance/"
 
 
 class StratfordPersonScraper(CanadianScraper):

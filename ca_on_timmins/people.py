@@ -52,6 +52,7 @@ class TimminsPersonScraper(CanadianScraper):
             ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
             name_h = ppage.xpath("//h1")
             name = name_h[0].text_content().strip() if name_h else ""
+            name = re.sub(r"^Ward\s+\d+\s*[-–]\s*", "", name).strip()
             name = re.sub(r"^Councillor\s+", "", name).strip()
             if not name:
                 continue

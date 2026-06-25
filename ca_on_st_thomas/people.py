@@ -1,3 +1,5 @@
+import re
+
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
@@ -10,21 +12,28 @@ BROWSER_USER_AGENT = (
 class StThomasPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(LISTING_URL, user_agent=BROWSER_USER_AGENT)
-        profile_links = list(
-            dict.fromkeys(
-                page.xpath(
-                    '//a[contains(@href,"/city_hall/city_council/mayor_")'
-                    ' or contains(@href,"/city_hall/city_council/councillor_")]/@href'
-                )
-            )
-        )
-        assert profile_links, "No member profile links found"
+        # Collect link nodes (not just hrefs) to also capture link text for names
+        seen = set()
+        profile_nodes = []
+        for node in page.xpath(
+            '//a[contains(@href,"/city_hall/city_council/mayor_")'
+            ' or contains(@href,"/city_hall/city_council/councillor_")]'
+        ):
+            href = node.get("href", "")
+            if href and href not in seen:
+                seen.add(href)
+                profile_nodes.append((href, node.text_content().strip()))
+        assert profile_nodes, "No member profile links found"
         seat = 0
-        for href in profile_links:
-            url = href if href.startswith("http") else f"https://www.stthomas.ca{href}"
-            ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
-            name_h = ppage.xpath('//h1 | //h2[contains(@class,"page-title")]')
-            name = name_h[0].text_content().strip() if name_h else ""
+        for href, link_text in profile_nodes:
+            # Profile page content is JS-rendered — derive name from link text or slug
+            name_from_text = re.sub(r"^(Mayor|Councillor)\s+", "", link_text).strip()
+            if len(name_from_text.split()) >= 2:
+                name = name_from_text
+            else:
+                slug = href.rstrip("/").split("/")[-1]
+                slug = re.sub(r"^(mayor_|councillor_)", "", slug)
+                name = " ".join(w.capitalize() for w in slug.split("_"))
             if not name:
                 continue
             if "mayor_" in href:
@@ -32,9 +41,13 @@ class StThomasPersonScraper(CanadianScraper):
             else:
                 seat += 1
                 role, district = "Councillor", f"St. Thomas (seat {seat})"
+            url = href if href.startswith("http") else f"https://www.stthomas.ca{href}"
+            ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
             email = self.get_email(ppage, error=False)
             phone = self.get_phone(ppage, area_codes=[519, 226, 548], error=False)
-            image = ppage.xpath('//img[contains(@src,"civiclive.com") or contains(@src,"UserFiles")]/@src')
+            image = ppage.xpath(
+                '//img[contains(@src,"civiclive.com") or contains(@src,"UserFiles")]/@src'
+            )
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(LISTING_URL)
             p.add_source(url)

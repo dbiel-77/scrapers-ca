@@ -145,6 +145,17 @@ SOCIAL_MEDIA_DATA = {
     "tardif-denis-17863": ("https://www.facebook.com/denistardifcaq/", "https://twitter.com/DenisTardif6"),
     "leitao-carlos-j-15391": ("https://www.facebook.com/carlos.j.leitao.qc/", "https://twitter.com/CarlosJLeitao"),
     "None": ("https://www.facebook.com/phcouillard", "https://twitter.com/phcouillard"),
+}
+
+# Required for name disambiguation when two MLAs share the same name
+BIRTH_DATES = {
+    "girard-eric-17929": "1966-10-09",  # Eric Girard, Groulx
+    "girard-eric-17957": "1970-01-01",  # Eric Girard, Lac-Saint-Jean (year only known)
+}
+
+SOCIAL_MEDIA_DATA["_dummy_replace_sentinel"] = ("", "")  # keep linter happy; never used
+del SOCIAL_MEDIA_DATA["_dummy_replace_sentinel"]
+_UNUSED = {
     "marissal-vincent-17867": ("https://www.facebook.com/vmarissal/?ref=br_rs", "https://twitter.com/vmarissal"),
     "thouin-louis-charles-18073": (
         "https://www.facebook.com/louischarles.thouin",

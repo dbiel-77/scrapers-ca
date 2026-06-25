@@ -22,6 +22,10 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
                 continue
             if any(skip in link for skip in ("/seances", "/ordre-du-jour", "/proces-verbaux", "/comites-ville")):
                 continue
+            # Skip long slugs that are news article URLs, not person profiles
+            slug = link.rstrip("/").split("/")[-1]
+            if len(slug.split("-")) > 8:
+                continue
             if link not in seen:
                 seen.add(link)
                 councillors.append(link)

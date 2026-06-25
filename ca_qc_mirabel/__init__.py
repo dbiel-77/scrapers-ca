@@ -18,7 +18,7 @@ class Mirabel(CanadianJurisdiction):
             organization.add_post(
                 role="Conseiller",
                 label=f"District {district_number}",
-                division_id=f"{self.division_id}/district:{district_number}",
+                division_id=self.division_id,
             )
 
         yield organization

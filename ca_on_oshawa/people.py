@@ -7,29 +7,39 @@ COUNCIL_PAGE = "https://www.oshawa.ca/city-hall/city-council/council-members/"
 
 
 class OshawaPersonScraper(CanadianScraper):
-    def get_oshawa_phone(self, node):
-        phone = self.get_phone(node, error=False)
-        if phone and phone.startswith("//"):
-            return phone.lstrip("/")
-        return phone
-
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
-        # Each card is a div.item containing div.inner > div.image + div.info
-        councillors = page.xpath('//div[contains(@class, "usn_pod_textimage")]')
+        # Page uses semantic HTML: h3 (name) + p (role) + p (tel) + p (email), no container class.
+        # Anchor on h3 elements that have a following mailto: link.
+        h3_nodes = page.xpath('//h3[following-sibling::p[a[contains(@href,"mailto:")]]]')
+        assert h3_nodes, "No council member headings found"
 
-        assert len(councillors), "No councillors found"
-        for councillor in councillors:
-            name = councillor.xpath('.//p[contains(@class, "heading")]')[0].text_content().strip()
-            role_text = councillor.xpath('.//div[contains(@class, "text")]//p[1]')[0].text_content().strip()
+        for h3 in h3_nodes:
+            name = h3.text_content().strip()
+            if not name:
+                continue
+            parent = h3.getparent()
+            children = list(parent)
+            h3_idx = children.index(h3)
+            # Collect sibling elements up to the next h3 or img (next member boundary)
+            next_boundary = next(
+                (
+                    i
+                    for i, el in enumerate(children[h3_idx + 1 :], h3_idx + 1)
+                    if el.tag in ("h3", "img")
+                ),
+                len(children),
+            )
+            member_els = children[h3_idx + 1 : next_boundary]
+            p_els = [el for el in member_els if el.tag == "p"]
+
+            role_text = p_els[0].text_content().strip() if p_els else ""
+            role_text = re.sub(r"\s+" + re.escape(name) + r"$", "", role_text).strip()
 
             if "Mayor" in role_text and "Ward" not in role_text:
                 role = "Mayor"
                 district = "Oshawa"
             else:
-                # e.g. "Ward 1 Regional & City Councillor" or "Ward 1 City Councillor"
-                # Strip trailing name if present (some paragraphs include it)
-                role_text = re.sub(r"\s+" + re.escape(name) + r"$", "", role_text).strip()
                 ward_match = re.match(r"(Ward \d+)\s+(.+)", role_text)
                 if not ward_match:
                     continue
@@ -37,19 +47,37 @@ class OshawaPersonScraper(CanadianScraper):
                 role_desc = ward_match.group(2)
                 role = "Regional Councillor" if "Regional" in role_desc else "Councillor"
 
-            photo_url = councillor.xpath(".//img/@src")
-            photo_url = photo_url[0] if photo_url else None
-            phone = self.get_oshawa_phone(councillor)
-            email = self.get_email(councillor, error=False)
-            links = councillor.xpath(".//a/@href")
+            # Image from preceding img sibling
+            img_els = [
+                children[i]
+                for i in range(h3_idx - 1, max(-1, h3_idx - 4), -1)
+                if children[i].tag == "img"
+            ]
+            photo_url = img_els[0].get("src") if img_els else None
 
-            p = Person(primary_org="legislature", name=name, district=district, role=role, image=photo_url)
+            phone = None
+            email = None
+            links = []
+            for p in p_els:
+                for a in p.xpath(".//a"):
+                    href = a.get("href", "")
+                    if href.startswith("tel:"):
+                        phone_text = a.text_content().strip().lstrip("/")
+                        if phone_text:
+                            phone = phone_text
+                    elif href.startswith("mailto:"):
+                        email = href.replace("mailto:", "")
+                    elif href:
+                        links.append(href)
+
+            p = Person(
+                primary_org="legislature", name=name, district=district, role=role, image=photo_url
+            )
             p.add_source(COUNCIL_PAGE)
             if phone:
                 p.add_contact("voice", phone, "legislature")
             if email:
                 p.add_contact("email", email)
             for link in links:
-                if "mailto:" not in link and "tel:" not in link:
-                    p.add_link(link)
+                p.add_link(link)
             yield p

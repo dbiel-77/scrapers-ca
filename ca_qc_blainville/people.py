@@ -27,7 +27,7 @@ class BlainvillePersonScraper(CanadianScraper):
                 district = "Blainville"
             else:
                 role = "Conseiller"
-                district = district_or_title.replace("d'Alençon", "d’Alençon")
+                district = district_or_title.replace("’", "’").replace("‘", "’")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

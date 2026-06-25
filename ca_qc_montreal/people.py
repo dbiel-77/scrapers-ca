@@ -57,6 +57,14 @@ class MontrealPersonScraper(CSVScraper):
     def header_converter(self, s):
         s = super().header_converter(s).strip()
         return {
+            # Current column names (2024+ CSV format)
+            "fonction élective": "primary role",
+            "appellation": "gender",
+            "district": "district name",
+            "parti": "party name",
+            "téléphone": "phone",
+            "courriel officiel": "email",
+            # Legacy column names (pre-2024)
             "rôles": "primary role",
             "adresse ligne 1 (arrondissement)": "address line 1",
             "adresse ligne 2 (arrondissement)": "address line 2",
