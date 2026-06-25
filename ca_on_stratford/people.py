@@ -12,7 +12,9 @@ class StratfordPersonScraper(CanadianScraper):
 
         seat_number = 1
         for member in members:
-            title = member.xpath("normalize-space(.//p/strong[starts-with(., 'Mayor ') or starts-with(., 'Councillor ')])")
+            title = member.xpath(
+                "normalize-space(.//p/strong[starts-with(., 'Mayor ') or starts-with(., 'Councillor ')])"
+            )
             role, name = title.split(" ", 1)
             if role == "Mayor":
                 district = "Stratford"

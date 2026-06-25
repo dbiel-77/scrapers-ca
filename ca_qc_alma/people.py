@@ -26,7 +26,9 @@ class AlmaPersonScraper(CanadianScraper):
             for text in texts:
                 if text.startswith("Carte du district") or text.startswith(("Madame", "Monsieur")):
                     break
-                if text.startswith("District") or (district_bits and not text.startswith(("Cellulaire", "Résidence", "Courriel"))):
+                if text.startswith("District") or (
+                    district_bits and not text.startswith(("Cellulaire", "Résidence", "Courriel"))
+                ):
                     district_bits.append(text)
             if name == "Sylvie Beaumont":
                 role = "Maire"

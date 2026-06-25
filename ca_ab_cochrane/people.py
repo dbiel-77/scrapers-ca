@@ -7,7 +7,9 @@ COUNCIL_PAGE = "https://www.cochrane.ca/government/council"
 class CochranePersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
-        members = page.xpath('//div[contains(@class, "views-row")][.//h3[starts-with(., "Mayor") or starts-with(., "Councillor")]]')
+        members = page.xpath(
+            '//div[contains(@class, "views-row")][.//h3[starts-with(., "Mayor") or starts-with(., "Councillor")]]'
+        )
         assert len(members) == 7, "Expected 7 council members"
 
         seat_number = 1
