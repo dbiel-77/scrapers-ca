@@ -20,7 +20,9 @@ class BoisbriandPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE, "utf-8", verify=False)
         for name, role, district, email in MEMBERS:
-            image = page.xpath(f'//img[contains(@src, "{name.split()[0]}") or contains(@src, "{name.split()[-1]}")]/@src')
+            image = page.xpath(
+                f'//img[contains(@src, "{name.split()[0]}") or contains(@src, "{name.split()[-1]}")]/@src'
+            )
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)
             if email:
