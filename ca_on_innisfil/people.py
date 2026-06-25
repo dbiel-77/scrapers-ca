@@ -14,8 +14,12 @@ class InnisfilPersonScraper(CanadianScraper):
             if not name:
                 continue
 
-            pos_text = card.xpath('normalize-space(.//div[contains(@class, "views-field-field-position")]//span[contains(@class, "field-content")])')
-            ward_text = card.xpath('normalize-space(.//div[contains(@class, "views-field-field-ward")]//span[contains(@class, "field-content")])')
+            pos_text = card.xpath(
+                'normalize-space(.//div[contains(@class, "views-field-field-position")]//span[contains(@class, "field-content")])'
+            )
+            ward_text = card.xpath(
+                'normalize-space(.//div[contains(@class, "views-field-field-ward")]//span[contains(@class, "field-content")])'
+            )
             if "Mayor" in pos_text and "Deputy" not in pos_text:
                 role, district = "Mayor", "Innisfil"
             elif "Deputy Mayor" in pos_text:
