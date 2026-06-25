@@ -7,8 +7,7 @@ LISTING_URL = "https://www.timmins.ca/how_do_i_/contact_an_elected_official"
 MAYOR_URL = "https://www.timmins.ca/our_services/city_hall/mayor_and_council/mayors_office/"
 BASE = "https://www.timmins.ca"
 BROWSER_USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/126 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
 )
 
 

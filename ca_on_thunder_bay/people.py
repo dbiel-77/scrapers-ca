@@ -26,10 +26,7 @@ WARDS = {
 class ThunderBayPersonScraper(CanadianScraper):
     def clean_name(self, name):
         return " ".join(
-            name.replace("\xa0", " ")
-            .replace("Ch\xe2\x80\x99ng", "Ch'ng")
-            .replace("Ch\u2019ng", "Ch'ng")
-            .split()
+            name.replace("\xa0", " ").replace("Ch\xe2\x80\x99ng", "Ch'ng").replace("Ch\u2019ng", "Ch'ng").split()
         )
 
     def scrape(self):
