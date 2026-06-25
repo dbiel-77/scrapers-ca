@@ -47,6 +47,8 @@ class WaterlooPersonScraper(CanadianScraper):
 
         for card in cards:
             heading = card.text_content().strip()
+            if heading.startswith("In Memoriam"):
+                continue
             # "Karen Redman Regional Chair" or "Doug Craig Councillor"
             role_match = re.search(r"\b(Regional Chair|Councillor)\b", heading)
             if not role_match:
@@ -56,8 +58,8 @@ class WaterlooPersonScraper(CanadianScraper):
 
             # Get contact info from the same container
             container = card.getparent()
-            email = self.get_email(container)
-            phone = self.get_phone(container)
+            email = self.get_email(container, error=False)
+            phone = self.get_phone(container, area_codes=[519, 226, 548], error=False)
             bio_link = container.xpath('.//a[contains(@href, "/council/")]/@href')
             bio_url = bio_link[0] if bio_link else None
 
@@ -89,7 +91,9 @@ class WaterlooPersonScraper(CanadianScraper):
                     p.image = image[0]
                 p.add_source(full_url)
 
-            p.add_contact("email", email)
-            p.add_contact("voice", phone, "legislature")
+            if email:
+                p.add_contact("email", email)
+            if phone:
+                p.add_contact("voice", phone, "legislature")
             p.add_source(COUNCIL_PAGE)
             yield p

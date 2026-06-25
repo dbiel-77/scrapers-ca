@@ -1,3 +1,5 @@
+import re
+
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
@@ -18,6 +20,9 @@ class WhitbyPersonScraper(CanadianScraper):
             label = trigger.text_content().strip()
             if not label:
                 continue
+            is_mayor = re.match(r"^Mayor\s+[A-Z][A-Za-z'’-]+(?:\s+[A-Z][A-Za-z'’-]+)+$", label)
+            if not (is_mayor or ", Regional Councillor" in label or ", Town Councillor" in label):
+                continue
 
             # Find the corresponding collapsed content div by ID
             collapse_id = trigger.get("href", "").lstrip("#")
@@ -34,10 +39,11 @@ class WhitbyPersonScraper(CanadianScraper):
                 district = f"Whitby (seat {regional_councillor_seat_number})"
                 regional_councillor_seat_number += 1
             elif ", Town Councillor" in label:
-                # "Steve Lee, Town Councillor – North Ward 1"
+                # "Steve Lee, Town Councillor - North Ward 1"
                 name, rest = label.split(", Town Councillor")
-                # rest is " – North Ward 1"
-                district = rest.split(" – ")[-1].strip() if " – " in rest else "Whitby"
+                rest = rest.replace("–", "-").replace("â€“", "-")
+                district = rest.split(" - ")[-1].strip() if " - " in rest else "Whitby"
+                district = re.sub(r"\s+\d+$", "", district)
                 role = "Councillor"
             else:
                 continue

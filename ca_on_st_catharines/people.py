@@ -67,14 +67,16 @@ class StCatharinesPersonScraper(CanadianScraper):
 
     def scrape_councillors(self):
         page = self.lxmlize(COUNCIL_PAGE)
-        cards = page.xpath('//div[.//h3[starts-with(normalize-space(.), "Coun.")]]')
+        cards = page.xpath('//div[contains(@class, "usn_pod")][.//p[contains(@class, "heading")][starts-with(normalize-space(.), "Coun.")]]')
         assert len(cards), "No councillors found"
 
         seat_numbers = defaultdict(int)
 
         for card in cards:
-            name = card.xpath(".//h3/text()")[0].strip().replace("Coun. ", "")
-            ward_text = card.xpath(".//p[1]/text()")[0].strip()
+            name = card.xpath('normalize-space(.//p[contains(@class, "heading")])').replace("Coun. ", "")
+            ward_text = card.xpath('normalize-space(.//div[contains(@class, "text")]//p[starts-with(normalize-space(.), "Ward")][1])')
+            if not ward_text and name == "Jackie Lindal":
+                ward_text = "Ward 1, Merritton"
             ward_key = ward_text.split(",")[0].strip()
             ward_name = WARD_NAMES.get(ward_key, ward_key)
 

@@ -13,6 +13,7 @@ class WoodstockPersonScraper(CanadianScraper):
         seat = 0
         for h3 in h3_nodes:
             name = h3.text_content().strip()
+            name = name.split(" (", 1)[0].strip()
             if not name:
                 continue
 

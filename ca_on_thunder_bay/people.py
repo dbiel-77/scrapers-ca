@@ -25,7 +25,12 @@ WARDS = {
 
 class ThunderBayPersonScraper(CanadianScraper):
     def clean_name(self, name):
-        return " ".join(name.replace("\xa0", " ").replace("Ch\xe2\x80\x99ng", "Ch'ng").split())
+        return " ".join(
+            name.replace("\xa0", " ")
+            .replace("Ch\xe2\x80\x99ng", "Ch'ng")
+            .replace("Ch\u2019ng", "Ch'ng")
+            .split()
+        )
 
     def scrape(self):
         # SSLError(SSLError(1, '[SSL: DH_KEY_TOO_SMALL] dh key too small (_ssl.c:1133)'))

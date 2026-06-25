@@ -12,8 +12,13 @@ class WilmotPersonScraper(CanadianScraper):
 
         # Collapsible sections; trigger link text is "Mayor Natasha Salonen"
         # or "Ward 1 Councillor Stewart Cressman"
-        councillors = page.xpath('//a[contains(@href, "#collapse_")]')
+        councillors = page.xpath(
+            '//a[contains(@href, "#collapse_")][contains(., "Mayor") or contains(., "Councillor")]'
+        )
+        if not councillors:
+            councillors = page.xpath('//a[contains(., "Mayor") or contains(., "Councillor")]')
         assert len(councillors), "No councillors found"
+        count = 0
         for councillor in councillors:
             heading = councillor.text_content().strip()
             match = re.match(r"(Mayor|(?:Ward \d+ )?Councillor)\s+(.+)", heading)
@@ -34,9 +39,7 @@ class WilmotPersonScraper(CanadianScraper):
 
             collapse_id = councillor.get("href").lstrip("#")
             panel = page.xpath(f'//div[@id="{collapse_id}"]')
-            if not panel:
-                continue
-            panel = panel[0]
+            panel = panel[0] if panel else councillor.getparent()
 
             phone = self.get_phone(panel, area_codes=[519, 226, 548], error=False)
             email = self.get_email(panel, error=False)
@@ -46,4 +49,7 @@ class WilmotPersonScraper(CanadianScraper):
                 p.add_contact("voice", phone, "legislature")
             if email:
                 p.add_contact("email", email)
+            count += 1
             yield p
+
+        assert count, "No councillors found"

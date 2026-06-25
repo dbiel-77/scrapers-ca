@@ -6,12 +6,16 @@ from utils import CanadianScraper
 LISTING_URL = "https://www.timmins.ca/how_do_i_/contact_an_elected_official"
 MAYOR_URL = "https://www.timmins.ca/our_services/city_hall/mayor_and_council/mayors_office/"
 BASE = "https://www.timmins.ca"
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/126 Safari/537.36"
+)
 
 
 class TimminsPersonScraper(CanadianScraper):
     def scrape(self):
         # Mayor is not on the contact listing page — fetch separately
-        mpage = self.lxmlize(MAYOR_URL)
+        mpage = self.lxmlize(MAYOR_URL, user_agent=BROWSER_USER_AGENT)
         name_h = mpage.xpath("//h1")
         mayor_name = name_h[0].text_content().strip() if name_h else ""
         assert mayor_name, "Mayor name not found"
@@ -29,7 +33,7 @@ class TimminsPersonScraper(CanadianScraper):
         yield p
 
         # Councillors — filter to pageIds >= 19111000 to exclude nav links
-        page = self.lxmlize(LISTING_URL)
+        page = self.lxmlize(LISTING_URL, user_agent=BROWSER_USER_AGENT)
         all_links = page.xpath('//a[contains(@href,"portalId=11976429")]/@href')
         member_links = list(
             dict.fromkeys(
@@ -42,7 +46,7 @@ class TimminsPersonScraper(CanadianScraper):
         ward5_seat = 0
         for href in member_links:
             url = href if href.startswith("http") else BASE + href
-            ppage = self.lxmlize(url)
+            ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
             name_h = ppage.xpath("//h1")
             name = name_h[0].text_content().strip() if name_h else ""
             if not name:
