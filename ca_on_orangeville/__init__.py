@@ -15,5 +15,7 @@ class Orangeville(CanadianJurisdiction):
         organization.add_post(role="Mayor", label=self.division_name, division_id=self.division_id)
         organization.add_post(role="Deputy Mayor", label=self.division_name, division_id=self.division_id)
         for seat_number in range(1, 6):
-            organization.add_post(role="Councillor", label=f"Orangeville (seat {seat_number})", division_id=self.division_id)
+            organization.add_post(
+                role="Councillor", label=f"Orangeville (seat {seat_number})", division_id=self.division_id
+            )
         yield organization
