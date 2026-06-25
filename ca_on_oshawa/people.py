@@ -7,6 +7,12 @@ COUNCIL_PAGE = "https://www.oshawa.ca/city-hall/city-council/council-members/"
 
 
 class OshawaPersonScraper(CanadianScraper):
+    def get_oshawa_phone(self, node):
+        phone = self.get_phone(node, error=False)
+        if phone and phone.startswith("//"):
+            return phone.lstrip("/")
+        return phone
+
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
         # Each card is a div.item containing div.inner > div.image + div.info
@@ -33,14 +39,16 @@ class OshawaPersonScraper(CanadianScraper):
 
             photo_url = councillor.xpath(".//img/@src")
             photo_url = photo_url[0] if photo_url else None
-            phone = self.get_phone(councillor)
-            email = self.get_email(councillor)
+            phone = self.get_oshawa_phone(councillor)
+            email = self.get_email(councillor, error=False)
             links = councillor.xpath(".//a/@href")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role, image=photo_url)
             p.add_source(COUNCIL_PAGE)
-            p.add_contact("voice", phone, "legislature")
-            p.add_contact("email", email)
+            if phone:
+                p.add_contact("voice", phone, "legislature")
+            if email:
+                p.add_contact("email", email)
             for link in links:
                 if "mailto:" not in link and "tel:" not in link:
                     p.add_link(link)

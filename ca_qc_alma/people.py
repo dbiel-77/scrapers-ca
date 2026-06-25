@@ -35,7 +35,8 @@ class AlmaPersonScraper(CanadianScraper):
                 district = "Alma"
             else:
                 role = "Conseiller"
-                district = " - ".join(district_bits[:2]) if len(district_bits) > 1 else district_bits[0]
+                district_number = re.search(r"#\s*(\d+)", district_bits[0])
+                district = f"District {district_number.group(1)}"
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

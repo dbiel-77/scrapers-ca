@@ -1,3 +1,5 @@
+import re
+
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
@@ -24,6 +26,7 @@ class LongueuilPersonScraper(CanadianScraper):
 
             district_parts = tr.xpath('.//p[strong[contains(., "District")]]/text()')
             district = "".join(district_parts).strip().replace("\xa0", "")
+            district = re.sub(r"\s*[\u2010\u2011\u2012\u2013\u2014\u2015]\s*", "-", district)
             if "Greenfield Park" in district:
                 district = f"Greenfield Park (siège {seat_number})"
                 seat_number += 1

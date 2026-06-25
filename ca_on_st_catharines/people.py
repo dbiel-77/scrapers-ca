@@ -31,14 +31,18 @@ class StCatharinesPersonScraper(CanadianScraper):
         for el in page.xpath("//h1 | //h2 | //h3 | //strong"):
             text = el.text_content().strip()
             m = re.match(r"Mayor\s+(.+)", text)
-            if m and len(m.group(1).split()) >= 1:
+            if m and len(m.group(1).split()) >= 2:
                 name = m.group(1).strip()
                 break
+        if not name:
+            m = re.search(r"Mayor\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+has served", page.text_content())
+            if m:
+                name = m.group(1).strip()
         if not name:
             # Fallback: extract from img alt "A headshot of Mayor First Last ..."
             for alt in page.xpath("//img/@alt"):
                 m = re.search(r"Mayor\s+([\w][\w\s]+?)(?:\s+with|\s+in|\Z)", alt)
-                if m:
+                if m and len(m.group(1).split()) >= 2:
                     name = m.group(1).strip()
                     break
         if not name:

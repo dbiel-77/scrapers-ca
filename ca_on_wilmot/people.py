@@ -38,10 +38,12 @@ class WilmotPersonScraper(CanadianScraper):
                 continue
             panel = panel[0]
 
-            phone = self.get_phone(panel)
-            email = self.get_email(panel)
+            phone = self.get_phone(panel, area_codes=[519, 226, 548], error=False)
+            email = self.get_email(panel, error=False)
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)
-            p.add_contact("voice", phone, "legislature")
-            p.add_contact("email", email)
+            if phone:
+                p.add_contact("voice", phone, "legislature")
+            if email:
+                p.add_contact("email", email)
             yield p

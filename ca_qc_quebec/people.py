@@ -34,14 +34,16 @@ class QuebecPersonScraper(CanadianScraper):
                     )
                     role = "Conseiller"
 
-                if district == "Saules–Les Méandres":
+                if district == "Saules\u2013Les Méandres":
                     district = "Les Saules"
+                elif district == "Maizerets\u2013Lairet":
+                    district = "Maizerets-Lairet"
                 elif district == "Neufch\u00e2tel\u2013Lebourgneuf":
                     district = "Neufchâtel-Lebourgneuf"  # hyphen
                 elif district == "Loretteville\u2013Les Ch\u00e2tels":
                     district = "Loretteville-Les Ch\u00e2tels"  # hyphen
                 else:
-                    district = re.sub(r"–", "—", district)  # n-dash, m-dash
+                    district = re.sub(r"[\u2010\u2011\u2012\u2013\u2014\u2015]", "—", district)  # n-dash, m-dash
 
                 districts = [district]
 

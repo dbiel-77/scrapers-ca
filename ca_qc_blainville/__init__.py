@@ -28,11 +28,11 @@ class Blainville(CanadianJurisdiction):
             "District du Coteau (no 11)",
             "District Henri-Dunant (no 12)",
         ]
-        for district_number, district in enumerate(districts, start=1):
+        for district in districts:
             organization.add_post(
                 role="Conseiller",
                 label=district,
-                division_id=f"{self.division_id}/district:{district_number}",
+                division_id=self.division_id,
             )
 
         yield organization

@@ -1,3 +1,5 @@
+import re
+
 from django.template.defaultfilters import slugify
 
 from utils import CanadianPerson as Person
@@ -30,6 +32,9 @@ class LevisPersonScraper(CanadianScraper):
             position, name = person.xpath("./h3/text()")[0].replace("–", "-").split(" - ")
             if "," in position:
                 role, district = position.title().split(", ")[0].split(" ", 1)
+                district_number = re.search(r"\b(\d+)\b", district)
+                if district_number:
+                    district = f"District {district_number.group(1)}"
             else:
                 role = "Maire"
                 district = "Lévis"

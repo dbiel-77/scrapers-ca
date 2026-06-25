@@ -30,7 +30,7 @@ class NorthDumfriesPersonScraper(CanadianScraper):
             district = "North Dumfries" if role == "Mayor" else f"Ward {word_to_number[match.group(1)]}"
 
             # The content panel follows the trigger; find the collapse div by href target
-            collapse_id = councillor.get("href").lstrip("#")
+            collapse_id = councillor.get("href").rsplit("#", 1)[-1]
             panel = page.xpath(f'//div[@id="{collapse_id}"]')
             if not panel:
                 continue
