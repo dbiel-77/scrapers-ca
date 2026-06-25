@@ -17,7 +17,9 @@ class CapeBretonPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE, user_agent=CUSTOM_USER_AGENT)
 
-        councillor_urls = list(dict.fromkeys(page.xpath('//a[contains(@href, "/city-hall/councillors/district-")]/@href')))
+        councillor_urls = list(
+            dict.fromkeys(page.xpath('//a[contains(@href, "/city-hall/councillors/district-")]/@href'))
+        )
         assert len(councillor_urls), "No councillor URLs found"
 
         for url in councillor_urls:
