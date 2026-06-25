@@ -8,7 +8,9 @@ class TofinoPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE, verify=False)
         members = []
-        for img in page.xpath('//img[(contains(@alt, "Mayor") or contains(@alt, "Councillor")) and not(starts-with(@src, "data:"))]'):
+        for img in page.xpath(
+            '//img[(contains(@alt, "Mayor") or contains(@alt, "Councillor")) and not(starts-with(@src, "data:"))]'
+        ):
             alt = img.get("alt")
             if alt.startswith("Mayor "):
                 name = alt.replace("Mayor ", "").strip()

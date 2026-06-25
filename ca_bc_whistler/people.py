@@ -19,7 +19,9 @@ class WhistlerPersonScraper(CanadianScraper):
         page = self.lxmlize(COUNCIL_PAGE, verify=False)
         contact_page = self.lxmlize(CONTACT_PAGE, verify=False)
         contact_text = contact_page.text_content()
-        assert all(email in contact_text for _, _, _, email, _ in MEMBERS), "Expected all Whistler emails on contact page"
+        assert all(email in contact_text for _, _, _, email, _ in MEMBERS), (
+            "Expected all Whistler emails on contact page"
+        )
 
         for name, role, district, email, image_alt in MEMBERS:
             image = page.xpath(f'//img[@alt="{image_alt}" and not(starts-with(@src, "data:"))]/@src')
