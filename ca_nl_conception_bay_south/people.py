@@ -26,7 +26,7 @@ class ConceptionBaySouthPersonScraper(CanadianScraper):
             m = re.search(rf"{re.escape(name)}.*?(\(?709\)?[-\s.]\d{{3}}[-\s.]\d{{4}})", text, re.S)
             phone = m.group(1) if m else None
             image = page.xpath(
-                f'//img[contains(@alt, "{name}") or contains(@data-src, "{name.split()[0]}") or contains(@src, "{name.split()[0]}")]/@src'
+                f'//img[not(starts-with(@src, "data:")) and (contains(@alt, "{name}") or contains(@data-src, "{name.split()[0]}") or contains(@src, "{name.split()[0]}"))]/@src'
             )
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

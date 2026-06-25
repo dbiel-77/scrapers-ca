@@ -20,7 +20,7 @@ class SorelTracyPersonScraper(CanadianScraper):
             name = ""
         assert name, "Mayor name not found"
         email_a = mpage.xpath('.//a[starts-with(@href,"mailto:")]')
-        email = email_a[0].get("href").replace("mailto:", "") if email_a else None
+        email = email_a[0].get("href").replace("mailto:", "").split("?", 1)[0] if email_a else None
         phone_link = mpage.xpath('.//a[starts-with(@href,"tel:")]')
         phone = phone_link[0].text_content().strip() if phone_link else None
         p = Person(primary_org="legislature", name=name, district="Sorel-Tracy", role="Mayor")
@@ -48,10 +48,10 @@ class SorelTracyPersonScraper(CanadianScraper):
             district = f"District {int(m.group(1))}"
             block = h4.getparent()
             email_a = block.xpath('.//a[starts-with(@href,"mailto:")]')
-            email = email_a[0].get("href").replace("mailto:", "") if email_a else None
+            email = email_a[0].get("href").replace("mailto:", "").split("?", 1)[0] if email_a else None
             phone_link = block.xpath('.//a[starts-with(@href,"tel:")]')
             phone = phone_link[0].text_content().strip() if phone_link else None
-            image = block.xpath(".//img/@src")
+            image = block.xpath('.//img[not(starts-with(@src, "data:"))]/@src')
             p = Person(primary_org="legislature", name=name, district=district, role="Councillor")
             p.add_source(COUNCIL_URL)
             if email:

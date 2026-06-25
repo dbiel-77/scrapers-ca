@@ -97,7 +97,8 @@ class StCatharinesPersonScraper(CanadianScraper):
 
             phone = card.xpath('.//a[starts-with(@href, "tel:")]/@href')
             if phone:
-                p.add_contact("voice", p.clean_telephone_number(phone[0].replace("tel:", "")), "legislature")
+                phone_number = phone[0].replace("tel:", "").replace("%20", "").replace(".", "").strip()
+                p.add_contact("voice", p.clean_telephone_number(phone_number), "legislature")
             email = card.xpath('.//a[starts-with(@href, "mailto:")]/@href')
             if email:
                 p.add_contact("email", email[0].replace("mailto:", ""))

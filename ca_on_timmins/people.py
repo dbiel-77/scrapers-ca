@@ -17,6 +17,10 @@ class TimminsPersonScraper(CanadianScraper):
         mpage = self.lxmlize(MAYOR_URL, user_agent=BROWSER_USER_AGENT)
         name_h = mpage.xpath("//h1")
         mayor_name = name_h[0].text_content().strip() if name_h else ""
+        if not mayor_name or "Mayor" in mayor_name:
+            text = " ".join(mpage.xpath("//body//text()"))
+            m = re.search(r"Mayor\s+([A-Z][A-Za-z' -]+)", text)
+            mayor_name = m.group(1).strip() if m else ""
         assert mayor_name, "Mayor name not found"
         mayor_email = self.get_email(mpage, error=False)
         mayor_phone = self.get_phone(mpage, area_codes=[705], error=False)
@@ -48,6 +52,7 @@ class TimminsPersonScraper(CanadianScraper):
             ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
             name_h = ppage.xpath("//h1")
             name = name_h[0].text_content().strip() if name_h else ""
+            name = re.sub(r"^Councillor\s+", "", name).strip()
             if not name:
                 continue
             body_text = " ".join(ppage.xpath("//body//text()"))

@@ -16,12 +16,14 @@ class SaintGeorgesPersonScraper(CanadianScraper):
             text = [text.strip() for text in member.xpath(".//text()") if text.strip()]
             name = text[1] if len(text) > 1 else text[0]
             name = re.sub(r",?\s+mairesse$", "", name)
+            name = re.sub(r"^(?:M\.|Mme\.?)\s+", "", name)
             if "Mairesse" in text[0]:
                 role = "Maire"
                 district = "Saint-Georges"
             else:
                 role = "Conseiller"
-                district = f"District {re.search(r'\d+', text[0]).group(0)}"
+                district_number = re.search(r"\d+", text[0]).group(0)
+                district = f"District {district_number}"
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

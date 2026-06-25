@@ -9,6 +9,13 @@ BASE_URL = "http://www.gatineau.ca"
 
 
 class GatineauPersonScraper(CanadianScraper):
+    def name_from_heading(self, text):
+        text = text.strip().replace("\xa0", " ")
+        for separator in (" \u2013 ", " \u2014 ", " \xe2\u20ac\u201c "):
+            if separator in text:
+                return text.split(separator, 1)[0].strip()
+        return text
+
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE)
 
@@ -26,6 +33,7 @@ class GatineauPersonScraper(CanadianScraper):
 
         councillors = unique_links
         assert councillors, "No councillors found"
+        generic_headings = {"En savoir plus", "Dans cette page"}
 
         for href in councillors:
             profile_url = BASE_URL + href if href.startswith("/") else href
@@ -56,17 +64,17 @@ class GatineauPersonScraper(CanadianScraper):
             h1_nodes = profile_page.xpath("//h1")
             name = ""
             if h1_nodes:
-                h1_text = h1_nodes[0].text_content().strip()
-                # Take everything before the em-dash separator
-                name = h1_text.split(" – ")[0].split(" – ")[0].strip()
+                # Take everything before the dash separator.
+                name = self.name_from_heading(h1_nodes[0].text_content())
+                if name in generic_headings:
+                    name = ""
             if not name:
                 # Fallback: extract from link text on the main page
                 name_link = page.xpath(f'//a[@href="{href}"]')
                 if name_link:
-                    raw = name_link[0].text_content().strip()
-                    name = raw.split(" – ")[0].split(" – ")[0].strip()
+                    name = self.name_from_heading(name_link[0].text_content())
 
-            if not name or name == "Vacant":
+            if not name or name == "Vacant" or name in generic_headings:
                 continue
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)

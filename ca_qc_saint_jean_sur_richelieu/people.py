@@ -20,6 +20,8 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
             # Exclude the main conseil-municipal listing page itself
             if link.rstrip("/").endswith("/conseil-municipal"):
                 continue
+            if any(skip in link for skip in ("/seances", "/ordre-du-jour", "/proces-verbaux", "/comites-ville")):
+                continue
             if link not in seen:
                 seen.add(link)
                 councillors.append(link)
@@ -40,12 +42,14 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
 
             if role == "Maire":
                 # Mayor page: h1="Mairie", name is in h2
-                name_nodes = node.xpath("//h2")
+                name_nodes = node.xpath('//h2[not(contains(., "Conseil municipal"))]')
                 name = name_nodes[0].text_content().strip() if name_nodes else ""
             else:
                 # Councillor page: h1 contains the name
                 name_nodes = node.xpath("//h1")
                 name = name_nodes[0].text_content().strip() if name_nodes else ""
+            if not name or name == "Vacant" or "Conseil municipal" in name or "Comités" in name:
+                continue
 
             # For councillors, district is in h2 (e.g. "Conseillère municipale du district 1")
             if role == "Conseiller":
@@ -58,7 +62,7 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
 
             # Photo: WordPress upload img excluding site logos (logo.jpg, logo_blanc*)
             photo_nodes = node.xpath(
-                '//img[contains(@src, "wp-content/uploads") and not(contains(@src, "logo"))]/@src'
+                '//img[contains(@src, "wp-content/uploads") and not(contains(@src, "logo")) and not(starts-with(@src, "data:"))]/@src'
             )
             photo_url = urljoin(url, photo_nodes[0]) if photo_nodes else None
 

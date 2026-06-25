@@ -18,7 +18,7 @@ class SainteJuliePersonScraper(CanadianScraper):
                 district = "Sainte-Julie"
             else:
                 role = "Conseiller"
-                district = f"{text[1]} - {text[2]}"
+                district = text[1]
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)

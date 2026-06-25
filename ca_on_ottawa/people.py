@@ -12,3 +12,9 @@ class OttawaPersonScraper(CSVScraper):
         if header == "ward name":
             return "district name"
         return header
+
+    corrections = {
+        "first name": {
+            "StÃ©phanie": "Stéphanie",
+        },
+    }

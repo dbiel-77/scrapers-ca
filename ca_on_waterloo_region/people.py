@@ -7,6 +7,24 @@ from utils import CanadianScraper
 COUNCIL_PAGE = "https://www.regionofwaterloo.ca/government-and-council/council/council-members/"
 CHAIR_PAGE = "https://www.regionofwaterloo.ca/government-and-council/council/council-chair/"
 
+DISTRICTS = {
+    "Doug Craig": "Cambridge",
+    "Jan Liggett": "Cambridge",
+    "Pam Wolf": "Cambridge",
+    "Michael Harris": "Kitchener",
+    "Chantal Huinink": "Kitchener",
+    "Colleen James": "Kitchener",
+    "Matt Rodrigues": "Kitchener",
+    "Berry Vrbanovic": "Kitchener",
+    "Jim Erb": "Waterloo",
+    "Dorothy McCabe": "Waterloo",
+    "Joe Nowak": "Waterloo",
+    "Joe Gowing": "North Dumfries",
+    "Natasha Salonen": "Wilmot",
+    "Sandy Shantz": "Woolwich",
+    "Sue Foxton": "Wellesley",
+}
+
 
 def _extract_district(text):
     """Try to extract the municipality from a councillor's biography text."""
@@ -70,7 +88,8 @@ class WaterlooPersonScraper(CanadianScraper):
             else:
                 role = "Regional Councillor"
                 district = None
-                if bio_url:
+                district = DISTRICTS.get(name)
+                if not district and bio_url:
                     full_url = f"https://www.regionofwaterloo.ca{bio_url}" if bio_url.startswith("/") else bio_url
                     bio_page = self.lxmlize(full_url)
                     bio_text = bio_page.text_content()
@@ -80,7 +99,7 @@ class WaterlooPersonScraper(CanadianScraper):
                     seat_numbers[district] += 1
                     district = f"{district} (seat {seat_numbers[district]})"
                 elif not district:
-                    district = "Waterloo Region"
+                    raise Exception(f"No district for {name}")
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             if bio_url:

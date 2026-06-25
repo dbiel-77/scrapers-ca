@@ -38,6 +38,8 @@ class QuebecPersonScraper(CanadianScraper):
                     district = "Les Saules"
                 elif district == "Maizerets\u2013Lairet":
                     district = "Maizerets-Lairet"
+                elif district == "Vanier\u2013Duberger":
+                    district = "Vanier-Duberger"
                 elif district == "Neufch\u00e2tel\u2013Lebourgneuf":
                     district = "Neufchâtel-Lebourgneuf"  # hyphen
                 elif district == "Loretteville\u2013Les Ch\u00e2tels":
