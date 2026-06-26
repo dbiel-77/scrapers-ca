@@ -45,9 +45,7 @@ class StThomasPersonScraper(CanadianScraper):
             ppage = self.lxmlize(url, user_agent=BROWSER_USER_AGENT)
             email = self.get_email(ppage, error=False)
             phone = self.get_phone(ppage, area_codes=[519, 226, 548], error=False)
-            image = ppage.xpath(
-                '//img[contains(@src,"civiclive.com") or contains(@src,"UserFiles")]/@src'
-            )
+            image = ppage.xpath('//img[contains(@src,"civiclive.com") or contains(@src,"UserFiles")]/@src')
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(LISTING_URL)
             p.add_source(url)

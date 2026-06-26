@@ -11,9 +11,7 @@ class SorelTracyPersonScraper(CanadianScraper):
     def scrape(self):
         # Mayor — h1 is the page title "Maire", name is in a paragraph
         mpage = self.lxmlize(MAYOR_URL)
-        name_p = mpage.xpath(
-            '//p[contains(., "maire actuel") or contains(., "mairesse actuelle")]'
-        )
+        name_p = mpage.xpath('//p[contains(., "maire actuel") or contains(., "mairesse actuelle")]')
         if name_p:
             text = name_p[0].text_content().strip()
             name_m = re.search(r"est M(?:me\.?|\.)\s+(.+?)\.?\s*$", text)
@@ -45,11 +43,7 @@ class SorelTracyPersonScraper(CanadianScraper):
             children = list(parent)
             h2_idx = children.index(h2)
             next_h2_idx = next(
-                (
-                    i
-                    for i, el in enumerate(children[h2_idx + 1 :], h2_idx + 1)
-                    if el.tag == "h2"
-                ),
+                (i for i, el in enumerate(children[h2_idx + 1 :], h2_idx + 1) if el.tag == "h2"),
                 len(children),
             )
             member_els = children[h2_idx + 1 : next_h2_idx]
@@ -81,9 +75,7 @@ class SorelTracyPersonScraper(CanadianScraper):
                     if pm:
                         phone = pm.group(0)
                         break
-            p_obj = Person(
-                primary_org="legislature", name=name, district=district, role="Councillor"
-            )
+            p_obj = Person(primary_org="legislature", name=name, district=district, role="Councillor")
             p_obj.add_source(COUNCIL_URL)
             if email:
                 p_obj.add_contact("email", email)
