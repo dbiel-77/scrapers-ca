@@ -43,9 +43,7 @@ class AjaxPersonScraper(CanadianScraper):
             if phone:
                 p.add_contact("voice", phone, "legislature")
             image = [
-                src
-                for src in accordion.xpath(".//img/@src")
-                if not re.search(r"logo|icon|ytimg", src, re.IGNORECASE)
+                src for src in accordion.xpath(".//img/@src") if not re.search(r"logo|icon|ytimg", src, re.IGNORECASE)
             ]
             if image:
                 p.image = image[0]

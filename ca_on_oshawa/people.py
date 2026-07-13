@@ -14,8 +14,7 @@ class OshawaPersonScraper(CanadianScraper):
         cards = [
             card
             for card in page.xpath(
-                '//div[contains(@class, "inner")]'
-                '[.//p[contains(@class, "heading")]][.//a[contains(@href, "mailto:")]]'
+                '//div[contains(@class, "inner")][.//p[contains(@class, "heading")]][.//a[contains(@href, "mailto:")]]'
             )
             # Containers nest; a member card holds exactly one heading.
             if len(card.xpath('.//p[contains(@class, "heading")]')) == 1

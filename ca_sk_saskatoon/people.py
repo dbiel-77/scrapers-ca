@@ -14,9 +14,7 @@ class SaskatoonPersonScraper(CanadianScraper):
         page = self.lxmlize(COUNCIL_URL)
 
         councillors = [
-            url
-            for url in page.xpath('//h2[@class="landing-block-title"]/a/@href')
-            if re.search(r"/ward-\d+$", url)
+            url for url in page.xpath('//h2[@class="landing-block-title"]/a/@href') if re.search(r"/ward-\d+$", url)
         ]
 
         assert len(councillors), "No councillors found"

@@ -34,9 +34,7 @@ class PickeringPersonScraper(CanadianScraper):
             p.add_contact("email", email)
 
             profile = self.lxmlize(profile_url)
-            image = profile.xpath(
-                '//main//img[not(contains(@src, "logo") or contains(@src, "icon"))]/@src'
-            )
+            image = profile.xpath('//main//img[not(contains(@src, "logo") or contains(@src, "icon"))]/@src')
             if image:
                 p.image = image[0]
             # Only some profiles publish a direct line, in a signature

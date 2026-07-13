@@ -21,9 +21,7 @@ class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
         seen = set()
         count = 0
         for card in cards:
-            link = card.xpath(
-                './/p//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire")]'
-            )
+            link = card.xpath('.//p//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire")]')
             if not link:
                 continue
             url = link[0].get("href")

@@ -54,7 +54,7 @@ class HamiltonPersonScraper(CanadianScraper):
         p = Person(primary_org="legislature", name=name, district="Hamilton", role="Mayor")
         p.add_source(MAYOR_PAGE)
 
-        main = page.xpath('//main') or page.xpath('//body')
+        main = page.xpath("//main") or page.xpath("//body")
         phone = self.get_phone(main[0], area_codes=[289, 365, 905], error=False)
         if phone:
             p.add_contact("voice", phone, "legislature")
