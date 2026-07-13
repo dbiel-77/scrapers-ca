@@ -2,11 +2,14 @@ from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 COUNCIL_PAGE = "https://www.whitehorse.ca/our-government/city-council/mayor-and-council/"
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
+)
 
 
 class WhitehorsePersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_PAGE)
+        page = self.lxmlize(COUNCIL_PAGE, user_agent=BROWSER_USER_AGENT)
         content = page.xpath('//div[contains(@class,"entry-content")]')
         assert content, "entry-content div not found"
         members = content[0].xpath(

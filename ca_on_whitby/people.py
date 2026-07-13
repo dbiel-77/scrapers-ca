@@ -3,7 +3,7 @@ import re
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
-COUNCIL_PAGE = "https://www.whitby.ca/en/town-hall/mayor-and-council.aspx"
+COUNCIL_PAGE = "https://www.whitby.ca/town-hall/mayor-and-council/"
 BASE_URL = "https://www.whitby.ca"
 
 
@@ -24,8 +24,9 @@ class WhitbyPersonScraper(CanadianScraper):
             if not (is_mayor or ", Regional Councillor" in label or ", Town Councillor" in label):
                 continue
 
-            # Find the corresponding collapsed content div by ID
-            collapse_id = trigger.get("href", "").lstrip("#")
+            # Find the corresponding collapsed content div by ID (hrefs are
+            # absolute URLs ending in #collapse_UUID_N)
+            collapse_id = trigger.get("href", "").split("#")[-1]
             content_nodes = page.xpath(f'//div[@id="{collapse_id}"]')
             node = content_nodes[0] if content_nodes else trigger.getparent()
 
@@ -58,6 +59,9 @@ class WhitbyPersonScraper(CanadianScraper):
             phone = self.get_phone(node, error=False)
             if phone:
                 p.add_contact("voice", phone, "legislature")
+            email = self.get_email(node, error=False)
+            if email:
+                p.add_contact("email", email)
             if image:
                 p.image = image
 

@@ -4,6 +4,9 @@ from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 COUNCIL_PAGE = "https://www.conceptionbaysouth.ca/council/councillors/"
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
+)
 
 MEMBERS = [
     ("Darrin Bent", "Mayor", "Conception Bay South"),
@@ -20,7 +23,7 @@ MEMBERS = [
 
 class ConceptionBaySouthPersonScraper(CanadianScraper):
     def scrape(self):
-        page = self.lxmlize(COUNCIL_PAGE, verify=False)
+        page = self.lxmlize(COUNCIL_PAGE, user_agent=BROWSER_USER_AGENT, verify=False)
         text = page.text_content()
         for name, role, district in MEMBERS:
             m = re.search(rf"{re.escape(name)}.*?(\(?709\)?[-\s.]\d{{3}}[-\s.]\d{{4}})", text, re.S)

@@ -1,83 +1,65 @@
 import re
-from urllib.parse import urljoin
 
 from utils import CanadianPerson as Person
 from utils import CanadianScraper
 
 COUNCIL_PAGE = "https://sjsr.ca/conseil-municipal/"
-BASE_URL = "https://sjsr.ca"
 
 
 class SaintJeanSurRichelieuPersonScraper(CanadianScraper):
     def scrape(self):
         page = self.lxmlize(COUNCIL_PAGE, encoding="utf-8")
 
-        # Councillor links appear twice each (image + name), so deduplicate
-        all_links = page.xpath('//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire/")]/@href')
+        # One card per member: a column holding a photo and a rich-text block
+        # like "<strong><a href=profile>Name</a></strong> Conseillère municipale
+        # District 1" (or "Maire" for the mayor). Taking the name and district
+        # from the cards avoids picking up news articles linked elsewhere.
+        cards = page.xpath(
+            '//div[contains(@class, "fl-col-content")]'
+            '[.//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire")]][.//img]'
+        )
         seen = set()
-        councillors = []
-        for link in all_links:
-            # Exclude the main conseil-municipal listing page itself
-            if link.rstrip("/").endswith("/conseil-municipal"):
+        count = 0
+        for card in cards:
+            link = card.xpath(
+                './/p//a[contains(@href, "/conseil-municipal/") or contains(@href, "/maire")]'
+            )
+            if not link:
                 continue
-            if any(skip in link for skip in ("/seances", "/ordre-du-jour", "/proces-verbaux", "/comites-ville")):
+            url = link[0].get("href")
+            if url in seen:
                 continue
-            # Skip long slugs that are news article URLs, not person profiles
-            slug = link.rstrip("/").split("/")[-1]
-            if len(slug.split("-")) > 8:
-                continue
-            if link not in seen:
-                seen.add(link)
-                councillors.append(link)
+            seen.add(url)
 
-        assert len(councillors), "No councillors found"
+            name = re.sub(r"\s+", " ", link[0].text_content()).strip()
+            text = re.sub(r"\s+", " ", card.text_content())
+            district_match = re.search(r"District (\d+)", text)
 
-        for href in councillors:
-            url = urljoin(BASE_URL, href)
-
-            if "/maire" in href:
+            if "/maire" in url or "Maire" in text:
                 role = "Maire"
                 district = "Saint-Jean-sur-Richelieu"
-            else:
+            elif district_match:
                 role = "Conseiller"
-                district = None
-
-            node = self.lxmlize(url)
-
-            if role == "Maire":
-                # Mayor page: h1="Mairie", name is in h2
-                name_nodes = node.xpath('//h2[not(contains(., "Conseil municipal"))]')
-                name = name_nodes[0].text_content().strip() if name_nodes else ""
+                district = f"District {district_match.group(1)}"
             else:
-                # Councillor page: h1 contains the name
-                name_nodes = node.xpath("//h1")
-                name = name_nodes[0].text_content().strip() if name_nodes else ""
-            if not name or name == "Vacant" or "Conseil municipal" in name or "Comités" in name:
                 continue
-
-            # For councillors, district is in h2 (e.g. "Conseillère municipale du district 1")
-            if role == "Conseiller":
-                h2_nodes = node.xpath("//h2")
-                district_text = h2_nodes[0].text_content().strip() if h2_nodes else ""
-                m = re.search(r"district\s+(\d+)", district_text, re.IGNORECASE)
-                district = f"District {m.group(1)}" if m else district_text
-                if not district:
-                    district = "Saint-Jean-sur-Richelieu"
-
-            # Photo: WordPress upload img excluding site logos (logo.jpg, logo_blanc*)
-            photo_nodes = node.xpath(
-                '//img[contains(@src, "wp-content/uploads") and not(contains(@src, "logo")) and not(starts-with(@src, "data:"))]/@src'
-            )
-            photo_url = urljoin(url, photo_nodes[0]) if photo_nodes else None
+            if not name or name == "Vacant":
+                continue
 
             p = Person(primary_org="legislature", name=name, district=district, role=role)
             p.add_source(COUNCIL_PAGE)
             p.add_source(url)
-            if photo_url:
-                p.image = photo_url
 
-            voice = self.get_phone(node, error=False)
+            image = card.xpath('.//img[contains(@src, "wp-content/uploads")]/@src')
+            if image:
+                p.image = image[0]
+
+            node = self.lxmlize(url)
+            voice = self.get_phone(node, area_codes=[450, 579], error=False)
             if voice:
                 p.add_contact("voice", voice, "legislature")
 
+            count += 1
             yield p
+
+        assert count, "No councillors found"

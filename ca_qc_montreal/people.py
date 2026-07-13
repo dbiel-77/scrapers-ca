@@ -1,5 +1,9 @@
 from utils import CSVScraper
 
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
+)
+
 
 class MontrealPersonScraper(CSVScraper):
     # http://donnees.ville.montreal.qc.ca/dataset/listes-des-elus-de-la-ville-de-montreal
@@ -80,3 +84,8 @@ class MontrealPersonScraper(CSVScraper):
             "Conseillère d'arrondissement",
             "Conseiller(\u00e8re) d'arrondissement",
         )
+
+    def scrape(self):
+        # donnees.montreal.ca intermittently rejects non-browser user agents.
+        self.user_agent = BROWSER_USER_AGENT
+        yield from super().scrape()
